@@ -1,19 +1,18 @@
 package com.xmx.androidmapbase.BaseMap;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
 import com.xmx.androidmapbase.R;
+import com.xmx.androidmapbase.Tools.ActivityBase.BaseActivity;
 
-public class MapActivity extends Activity {
+public class MapActivity extends BaseActivity {
     MapView mMapView = null;
     private AMap aMap;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void initView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_map);
         //获取地图控件引用
         mMapView = (MapView) findViewById(R.id.map);
@@ -23,6 +22,16 @@ public class MapActivity extends Activity {
             aMap = mMapView.getMap();
         }
         //aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
+    }
+
+    @Override
+    protected void setListener() {
+
+    }
+
+    @Override
+    protected void processLogic(Bundle savedInstanceState) {
+
     }
 
     @Override
