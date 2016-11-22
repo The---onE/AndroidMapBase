@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.xmx.androidmapbase"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
@@ -37,7 +37,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support:support-v4:23.4.0'
-    compile 'org.xutils:xutils:3.3.36'
+    //compile 'org.xutils:xutils:3.3.36'
     compile 'org.greenrobot:eventbus:3.0.0'
     //avoscloud-sdk 为 LeanCloud基础包
     compile 'cn.leancloud.android:avoscloud-sdk:v3.+'
@@ -50,6 +50,4 @@ dependencies {
     //compile 'org.dom4j:dom4j:2.0.0-RC1'
     compile 'org.slf4j:slf4j-simple:1.7.21'
     compile 'com.xiaoleilu:hutool:2.15.17'
-    compile files('libs/AMap_Search_V3.6.0_20161111.jar')
-    compile files('libs/Android_Map3D_SDK_V4.1.2_20161104.jar')
 }
