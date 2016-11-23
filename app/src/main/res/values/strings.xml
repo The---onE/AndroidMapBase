@@ -85,4 +85,6 @@
     <string name="choose_album">选择目录</string>
     <string name="choose_photo">选择图片</string>
 
+    <string name="location">定位</string>
+
 </resources>
