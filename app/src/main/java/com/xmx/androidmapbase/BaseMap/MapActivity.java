@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -20,31 +21,40 @@ import com.amap.api.maps.model.CircleOptions;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.MyLocationStyle;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.ActivityBase.BaseActivity;
 import com.xmx.androidmapbase.Tools.MapUtils.util.SensorEventHelper;
 
 import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
 @ContentView(R.layout.activity_map)
 public class MapActivity extends BaseActivity implements LocationSource {
-
-    @ViewInject(R.id.map)
-    private MapView mMapView;
 
     private AMap mAMap;
     private AMapLocationClient mLocationClient; //定位器
     private OnLocationChangedListener mListener; //定位监听器
 
     private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255); //精度边缘颜色
-    private static final int FILL_COLOR = Color.argb(0, 128, 192, 192); //精度填充颜色
+    private static final int FILL_COLOR = Color.argb(64, 128, 192, 192); //精度填充颜色
     private boolean mFirstFix = false; //是否已将图标添加到地图
     private Marker mLocMarker; //定位点
     private Circle mCircle; //精度圆
     private SensorEventHelper mSensorHelper; //用于获取指南针方向
     public static final String LOCATION_MARKER_FLAG = "myLocation";
+    private LatLng mLocation; //当前位置
+    private static final float DEFAULT_SCALE = 15; //默认缩放比例
+
+    @ViewInject(R.id.map)
+    private MapView mMapView;
+
+    @Event(R.id.btn_location)
+    private void onLocationClick(View view) {
+        if (mLocation != null) {
+            focusLocation();
+        }
+    }
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -83,17 +93,17 @@ public class MapActivity extends BaseActivity implements LocationSource {
                 public void onLocationChanged(AMapLocation aMapLocation) {
                     if (mListener != null && aMapLocation != null) {
                         if (aMapLocation.getErrorCode() == 0) {
-                            LatLng location = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
+                            mLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
                             if (!mFirstFix) {
                                 mFirstFix = true;
-                                addCircle(location, aMapLocation.getAccuracy());//添加定位精度圆
-                                addMarker(location);//添加定位图标
+                                addCircle(mLocation, aMapLocation.getAccuracy());//添加定位精度圆
+                                addMarker(mLocation);//添加定位图标
                                 mSensorHelper.setCurrentMarker(mLocMarker);//定位图标旋转
-                                mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+                                focusLocation();
                             } else {
-                                mCircle.setCenter(location); //精度中心为定位点
+                                mCircle.setCenter(mLocation); //精度中心为定位点
                                 mCircle.setRadius(aMapLocation.getAccuracy()); //精度半径
-                                mLocMarker.setPosition(location); //定位点
+                                mLocMarker.setPosition(mLocation); //定位点
                             }
                             //mListener.onLocationChanged(aMapLocation); //系统默认定位事件
 
@@ -117,6 +127,17 @@ public class MapActivity extends BaseActivity implements LocationSource {
         }
     }
 
+    @Override
+    public void deactivate() {
+        mListener = null;
+        if (mLocationClient != null) {
+            mLocationClient.stopLocation();
+            mLocationClient.onDestroy();
+        }
+        mLocationClient = null;
+    }
+
+    //添加精度圆
     private void addCircle(LatLng latlng, double radius) {
         CircleOptions options = new CircleOptions();
         options.strokeWidth(1f);
@@ -127,6 +148,7 @@ public class MapActivity extends BaseActivity implements LocationSource {
         mCircle = mAMap.addCircle(options);
     }
 
+    //添加定位点
     private void addMarker(LatLng latlng) {
         if (mLocMarker != null) {
             return;
@@ -143,14 +165,17 @@ public class MapActivity extends BaseActivity implements LocationSource {
         mLocMarker.setTitle(LOCATION_MARKER_FLAG);
     }
 
-    @Override
-    public void deactivate() {
-        mListener = null;
-        if (mLocationClient != null) {
-            mLocationClient.stopLocation();
-            mLocationClient.onDestroy();
-        }
-        mLocationClient = null;
+    protected void focusLocation() {
+        focusLocation(mLocation, DEFAULT_SCALE);
+    }
+
+    protected void focusLocation(float scale) {
+        focusLocation(mLocation, scale);
+    }
+
+    //聚焦定位点，缩放比越大放大程度越高
+    protected void focusLocation(LatLng location, float scale) {
+        mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, scale));
     }
 
     @Override
