@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.xmx.androidmapbase.Fragments.HomeFragment;
+import com.xmx.androidmapbase.Fragments.MapFragment;
 import com.xmx.androidmapbase.Tools.ActivityBase.BaseNavigationActivity;
 import com.xmx.androidmapbase.Tools.PagerAdapter;
 import com.xmx.androidmapbase.User.Callback.AutoLoginCallback;
@@ -32,9 +33,11 @@ public class MainActivity extends BaseNavigationActivity {
 
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(new HomeFragment());
+        fragments.add(new MapFragment());
 
         List<String> titles = new ArrayList<>();
         titles.add("首页");
+        titles.add("地图");
 
         PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), fragments, titles);
 
