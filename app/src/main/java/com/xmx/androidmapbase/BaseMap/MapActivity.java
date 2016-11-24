@@ -11,9 +11,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
-import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.Circle;
@@ -22,7 +20,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.ActivityBase.BaseActivity;
+import com.xmx.androidmapbase.Tools.ActivityBase.BaseMapActivity;
 import com.xmx.androidmapbase.Tools.MapUtils.util.SensorEventHelper;
 
 import org.xutils.view.annotation.ContentView;
@@ -30,9 +28,8 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
 @ContentView(R.layout.activity_map)
-public class MapActivity extends BaseActivity implements LocationSource {
+public class MapActivity extends BaseMapActivity implements LocationSource {
 
-    private AMap mAMap;
     private AMapLocationClient mLocationClient; //定位器
     private OnLocationChangedListener mListener; //定位监听器
 
@@ -43,11 +40,6 @@ public class MapActivity extends BaseActivity implements LocationSource {
     private Circle mCircle; //精度圆
     private SensorEventHelper mSensorHelper; //用于获取指南针方向
     public static final String LOCATION_MARKER_FLAG = "myLocation";
-    private LatLng mLocation; //当前位置
-    private static final float DEFAULT_SCALE = 15; //默认缩放比例
-
-    @ViewInject(R.id.map)
-    private MapView mMapView;
 
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
@@ -57,11 +49,13 @@ public class MapActivity extends BaseActivity implements LocationSource {
     }
 
     @Override
+    protected void getMapView() {
+        mMapView = getViewById(R.id.map);
+    }
+
+    @Override
     protected void initView(Bundle savedInstanceState) {
-        mMapView.onCreate(savedInstanceState);
-        if (mAMap == null) {
-            mAMap = mMapView.getMap();
-        }
+        super.initView(savedInstanceState);
         //aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
     }
 
@@ -165,48 +159,23 @@ public class MapActivity extends BaseActivity implements LocationSource {
         mLocMarker.setTitle(LOCATION_MARKER_FLAG);
     }
 
-    protected void focusLocation() {
-        focusLocation(mLocation, DEFAULT_SCALE);
-    }
-
-    protected void focusLocation(float scale) {
-        focusLocation(mLocation, scale);
-    }
-
-    //聚焦定位点，缩放比越大放大程度越高
-    protected void focusLocation(LatLng location, float scale) {
-        mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, scale));
+    @Override
+    protected void whenResume() {
+        mSensorHelper = new SensorEventHelper(this);
+        mSensorHelper.registerSensorListener();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mMapView.onResume();
-        if (mSensorHelper != null) {
-            mSensorHelper.registerSensorListener();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+    protected void whenPause() {
         if (mSensorHelper != null) {
             mSensorHelper.unRegisterSensorListener();
-            mSensorHelper.setCurrentMarker(null);
             mSensorHelper = null;
         }
-        mMapView.onPause();
-        deactivate();
-        mFirstFix = false;
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mMapView.onDestroy();
-        if (null != mLocationClient) {
-            mLocationClient.onDestroy();
-        }
+    protected void whenDestroy() {
+        deactivate();
     }
 
     @Override
