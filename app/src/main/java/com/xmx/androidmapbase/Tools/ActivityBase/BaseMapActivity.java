@@ -26,8 +26,6 @@ public abstract class BaseMapActivity extends BaseActivity {
 
     protected AMap mAMap;
     protected MapView mMapView;
-
-    protected LatLng mLocation; //当前位置
     public static final float DEFAULT_SCALE = 15; //默认缩放比例
 
     protected abstract void getMapView();
@@ -44,12 +42,8 @@ public abstract class BaseMapActivity extends BaseActivity {
         }
     }
 
-    protected void focusLocation() {
-        focusLocation(mLocation, DEFAULT_SCALE);
-    }
-
-    protected void focusLocation(float scale) {
-        focusLocation(mLocation, scale);
+    protected void focusLocation(LatLng location) {
+        focusLocation(location, DEFAULT_SCALE);
     }
 
     //聚焦定位点，缩放比越大放大程度越高

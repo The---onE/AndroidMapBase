@@ -7,11 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.Circle;
@@ -20,7 +17,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.ActivityBase.BaseMapActivity;
+import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationActivity;
 import com.xmx.androidmapbase.Tools.MapUtils.util.SensorEventHelper;
 
 import org.xutils.view.annotation.ContentView;
@@ -28,10 +25,7 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
 @ContentView(R.layout.activity_map)
-public class MapActivity extends BaseMapActivity implements LocationSource {
-
-    private AMapLocationClient mLocationClient; //定位器
-    private OnLocationChangedListener mListener; //定位监听器
+public class MapActivity extends BaseLocationActivity {
 
     private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255); //精度边缘颜色
     private static final int FILL_COLOR = Color.argb(64, 128, 192, 192); //精度填充颜色
@@ -43,9 +37,7 @@ public class MapActivity extends BaseMapActivity implements LocationSource {
 
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
-        if (mLocation != null) {
-            focusLocation();
-        }
+        focusLocation();
     }
 
     @Override
@@ -66,9 +58,8 @@ public class MapActivity extends BaseMapActivity implements LocationSource {
 
     @Override
     protected void processLogic(Bundle savedInstanceState) {
-        mAMap.setLocationSource(this);//设置定位监听
+        super.processLogic(savedInstanceState);
         mAMap.getUiSettings().setMyLocationButtonEnabled(false);//设置默认定位按钮是否显示
-        mAMap.setMyLocationEnabled(true);//设置为true表示可触发定位
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
 
         mSensorHelper = new SensorEventHelper(this);
@@ -76,59 +67,32 @@ public class MapActivity extends BaseMapActivity implements LocationSource {
     }
 
     @Override
-    public void activate(OnLocationChangedListener onLocationChangedListener) {
-        mListener = onLocationChangedListener;
-        if (mLocationClient == null) {
-            mLocationClient = new AMapLocationClient(this);
-            AMapLocationClientOption locationOption = new AMapLocationClientOption();
-            //设置定位监听
-            mLocationClient.setLocationListener(new AMapLocationListener() {
-                @Override
-                public void onLocationChanged(AMapLocation aMapLocation) {
-                    if (mListener != null && aMapLocation != null) {
-                        if (aMapLocation.getErrorCode() == 0) {
-                            mLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-                            if (!mFirstFix) {
-                                mFirstFix = true;
-                                addCircle(mLocation, aMapLocation.getAccuracy());//添加定位精度圆
-                                addMarker(mLocation);//添加定位图标
-                                mSensorHelper.setCurrentMarker(mLocMarker);//定位图标旋转
-                                focusLocation();
-                            } else {
-                                mCircle.setCenter(mLocation); //精度中心为定位点
-                                mCircle.setRadius(aMapLocation.getAccuracy()); //精度半径
-                                mLocMarker.setPosition(mLocation); //定位点
-                            }
-                            //mListener.onLocationChanged(aMapLocation); //系统默认定位事件
-
-                        } else {
-                            String errText = "定位失败," + aMapLocation.getErrorCode() + ": " + aMapLocation.getErrorInfo();
-                            showToast(errText);
-                            showLog("AMapErr", errText);
-                        }
-                    }
-                }
-            });
-            //设置为高精度定位模式
-            locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-            //设置定位参数
-            mLocationClient.setLocationOption(locationOption);
-            // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-            // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
-            // 在定位结束后，在合适的生命周期调用onDestroy()方法
-            // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
-            mLocationClient.startLocation();
-        }
+    protected void setLocationOption(AMapLocationClientOption locationOption) {
+        //设置为高精度定位模式
+        locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
     }
 
     @Override
-    public void deactivate() {
-        mListener = null;
-        if (mLocationClient != null) {
-            mLocationClient.stopLocation();
-            mLocationClient.onDestroy();
+    protected void whenLocationChanged(AMapLocation aMapLocation) {
+        if (!mFirstFix) {
+            mFirstFix = true;
+            addCircle(mLocation, aMapLocation.getAccuracy());//添加定位精度圆
+            addMarker(mLocation);//添加定位图标
+            mSensorHelper.setCurrentMarker(mLocMarker);//定位图标旋转
+            focusLocation();
+        } else {
+            mCircle.setCenter(mLocation); //精度中心为定位点
+            mCircle.setRadius(aMapLocation.getAccuracy()); //精度半径
+            mLocMarker.setPosition(mLocation); //定位点
         }
-        mLocationClient = null;
+        //mListener.onLocationChanged(aMapLocation); //系统默认定位事件
+    }
+
+    @Override
+    protected void whenLocationError(int errorCode, String errorInfo) {
+        String errText = "定位失败," + errorCode + ": " + errorInfo;
+        showToast(errText);
+        showLog("AMapErr", errText);
     }
 
     //添加精度圆
@@ -159,28 +123,17 @@ public class MapActivity extends BaseMapActivity implements LocationSource {
         mLocMarker.setTitle(LOCATION_MARKER_FLAG);
     }
 
+
     @Override
     protected void whenResume() {
-        mSensorHelper = new SensorEventHelper(this);
-        mSensorHelper.registerSensorListener();
     }
 
     @Override
     protected void whenPause() {
-        if (mSensorHelper != null) {
-            mSensorHelper.unRegisterSensorListener();
-            mSensorHelper = null;
-        }
     }
 
     @Override
     protected void whenDestroy() {
         deactivate();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mMapView.onSaveInstanceState(outState);
     }
 }
