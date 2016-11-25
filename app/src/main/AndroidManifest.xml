@@ -84,6 +84,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".BaseMap.MapActivity"></activity>
+        <activity android:name=".BaseMap.MapPOIActivity"></activity>
     </application>
 
 </manifest>
