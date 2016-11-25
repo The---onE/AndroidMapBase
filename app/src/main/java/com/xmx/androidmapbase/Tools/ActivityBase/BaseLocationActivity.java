@@ -63,6 +63,12 @@ public abstract class BaseLocationActivity extends BaseMapActivity implements Lo
         mLocationClient = null;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        deactivate();
+    }
+
     protected void focusLocation() {
         if (mLocation != null) {
             focusLocation(mLocation, DEFAULT_SCALE);
