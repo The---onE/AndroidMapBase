@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.xmx.androidmapbase.Tools.MapUtils.util;
+package com.xmx.androidmapbase.Tools.MapUtils;
 
 import android.text.Html;
 import android.text.Spanned;

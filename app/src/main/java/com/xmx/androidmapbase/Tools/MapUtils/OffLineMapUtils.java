@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.Tools.MapUtils.util;
+package com.xmx.androidmapbase.Tools.MapUtils;
 
 import android.content.Context;
 import android.os.Environment;

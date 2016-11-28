@@ -19,6 +19,7 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationDirectionActivity;
+import com.xmx.androidmapbase.Tools.MapUtils.ToastUtil;
 import com.xmx.androidmapbase.Tools.POI.POIConstants;
 import com.xmx.androidmapbase.Tools.POI.POIManager;
 import com.xmx.androidmapbase.Tools.POI.POIOverlay;
@@ -36,7 +37,6 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
 
     private Marker lastMarker;
     private POIOverlay poiOverlay;// poi图层
-    int currentPage;
 
     @ViewInject(R.id.poi_name)
     private TextView mPoiName;
@@ -95,7 +95,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
 
                     @Override
                     public void error(int code) {
-
+                        ToastUtil.showError(getBaseContext(), code);
                     }
                 });
     }

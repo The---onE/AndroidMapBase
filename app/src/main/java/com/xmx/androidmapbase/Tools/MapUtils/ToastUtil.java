@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.xmx.androidmapbase.Tools.MapUtils.util;
+package com.xmx.androidmapbase.Tools.MapUtils;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -18,7 +18,7 @@ public class ToastUtil {
 		Toast.makeText(context, info, Toast.LENGTH_LONG).show();
 	}
 	
-	public static void showerror(Context context, int rCode){
+	public static void showError(Context context, int rCode){
 		try {
 	        switch (rCode) {
 	        //服务错误码

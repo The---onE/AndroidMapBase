@@ -4,11 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 
 import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.Circle;
@@ -17,10 +14,9 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.MapUtils.util.SensorEventHelper;
+import com.xmx.androidmapbase.Tools.MapUtils.SensorEventHelper;
 
 import org.xutils.view.annotation.ContentView;
-import org.xutils.view.annotation.Event;
 
 @ContentView(R.layout.activity_map)
 public abstract class BaseLocationDirectionActivity extends BaseLocationActivity {
