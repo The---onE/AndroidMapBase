@@ -6,6 +6,7 @@ import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVOSCloud;
 import com.xmx.androidmapbase.Tools.CrashHandler;
 import com.xmx.androidmapbase.Tools.Data.DataManager;
+import com.xmx.androidmapbase.Tools.POI.POIManager;
 import com.xmx.androidmapbase.User.UserManager;
 
 import org.xutils.x;
@@ -54,6 +55,8 @@ public class Application extends android.app.Application {
         AVInstallation.getCurrentInstallation().saveInBackground();
 
         UserManager.getInstance().setContext(this);
+
+        POIManager.getInstance().setContext(this);
 
         DataManager.getInstance().setContext(this);
     }
