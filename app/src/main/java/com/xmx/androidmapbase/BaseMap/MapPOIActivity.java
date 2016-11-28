@@ -36,12 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ContentView(R.layout.activity_map_poi)
-public class MapPOIActivity extends BaseLocationDirectionActivity
-        implements AMap.OnMapClickListener,
-        AMap.OnInfoWindowClickListener,
-        AMap.InfoWindowAdapter,
-        AMap.OnMarkerClickListener,
-        PoiSearch.OnPoiSearchListener {
+public class MapPOIActivity extends BaseLocationDirectionActivity {
 
     private PoiSearch.Query query;// Poi查询条件类
     private Marker lastMarker;
@@ -51,12 +46,20 @@ public class MapPOIActivity extends BaseLocationDirectionActivity
     private static final int SEARCH_RADIUS = 5000;
     private static final int SEARCH_SIZE = 20;
 
-    private RelativeLayout mPoiDetail;
-    private TextView mPoiName, mPoiAddress;
+    @ViewInject(R.id.poi_name)
+    private TextView mPoiName;
+
+    @ViewInject(R.id.poi_address)
+    private TextView mPoiAddress;
+
+    @ViewInject(R.id.input_edittext)
     private EditText mSearchText;
 
     @ViewInject(R.id.btn_location)
     Button locationButton;
+
+    @ViewInject(R.id.poi_detail)
+    private RelativeLayout mPoiDetail;
 
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
@@ -77,6 +80,11 @@ public class MapPOIActivity extends BaseLocationDirectionActivity
         }
     }
 
+    @Event(R.id.poi_detail)
+    private void onDetailClick(View view) {
+        //打开地点详情
+    }
+
     @Override
     protected void getMapView() {
         mMapView = getViewById(R.id.map);
@@ -90,24 +98,66 @@ public class MapPOIActivity extends BaseLocationDirectionActivity
         fillColor = Color.argb(64, 128, 192, 192);
         markerFlag = "myLocation";
         //aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
-
-        mPoiName = getViewById(R.id.poi_name);
-        mPoiAddress = getViewById(R.id.poi_address);
-        mSearchText = getViewById(R.id.input_edittext);
     }
 
     @Override
     protected void setListener() {
-        mAMap.setOnMapClickListener(this);
-        mAMap.setOnMarkerClickListener(this);
-        mAMap.setOnInfoWindowClickListener(this);
-        mAMap.setInfoWindowAdapter(this);
-
-        mPoiDetail = (RelativeLayout) findViewById(R.id.poi_detail);
-        mPoiDetail.setOnClickListener(new View.OnClickListener() {
+        mAMap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
-            public void onClick(View v) {
-                //打开地点详情
+            public void onMapClick(LatLng latLng) {
+                whetherToShowDetailInfo(false);
+                if (lastMarker != null) {
+                    resetLastMarker();
+                }
+            }
+        });
+        mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (marker.getObject() != null) {
+                    whetherToShowDetailInfo(true);
+                    try {
+                        PoiItem mCurrentPoi = (PoiItem) marker.getObject();
+                        if (lastMarker == null) {
+                            lastMarker = marker;
+                        } else {
+                            // 将之前被点击的marker置为原来的状态
+                            resetLastMarker();
+                            lastMarker = marker;
+                        }
+                        Marker detailMarker = marker;
+                        detailMarker.setIcon(BitmapDescriptorFactory
+                                .fromBitmap(BitmapFactory.decodeResource(
+                                        getResources(),
+                                        R.drawable.poi_marker_pressed)));
+
+                        setPoiItemDisplayContent(mCurrentPoi);
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                } else {
+                    whetherToShowDetailInfo(false);
+                    resetLastMarker();
+                }
+                return true;
+            }
+        });
+        mAMap.setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+
+            }
+        });
+
+        mAMap.setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                return null;
             }
         });
     }
@@ -132,86 +182,55 @@ public class MapPOIActivity extends BaseLocationDirectionActivity
 
         if (mLocation != null) {
             PoiSearch poiSearch = new PoiSearch(this, query);
-            poiSearch.setOnPoiSearchListener(this);
+            poiSearch.setOnPoiSearchListener(new PoiSearch.OnPoiSearchListener() {
+                @Override
+                public void onPoiSearched(PoiResult poiResult, int poiCode) {
+                    if (poiCode == AMapException.CODE_AMAP_SUCCESS) {
+                        if (poiResult != null && poiResult.getQuery() != null) {// 搜索poi的结果
+                            if (poiResult.getQuery().equals(query)) {// 是否是同一条
+                                poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
+                                List<SuggestionCity> suggestionCities = poiResult
+                                        .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
+                                if (poiItems != null && poiItems.size() > 0) {
+                                    //清除POI信息显示
+                                    whetherToShowDetailInfo(false);
+                                    //并还原点击marker样式
+                                    if (lastMarker != null) {
+                                        resetLastMarker();
+                                    }
+                                    //清理之前搜索结果的marker
+                                    if (poiOverlay != null) {
+                                        poiOverlay.removeFromMap();
+                                    }
+                                    poiOverlay = new MyPoiOverlay(mAMap, poiItems);
+                                    poiOverlay.addToMap();
+                                    //poiOverlay.zoomToSpan();
+                                    focusLocation();
+
+                                } else if (suggestionCities != null
+                                        && suggestionCities.size() > 0) {
+                                    showSuggestCity(suggestionCities);
+                                } else {
+                                    showToast(R.string.no_result);
+                                }
+                            }
+                        } else {
+                            showToast(R.string.no_result);
+                        }
+                    }
+                }
+
+                @Override
+                public void onPoiItemSearched(PoiItem poiItem, int i) {
+
+                }
+            });
             poiSearch.setBound(new PoiSearch.SearchBound(
                     new LatLonPoint(mLocation.latitude, mLocation.longitude),
                     SEARCH_RADIUS, true));//
-            // 设置搜索区域为以lp点为圆心，其周围范围
+            // 设置搜索区域为以当前位置为圆心，其周围范围
             poiSearch.searchPOIAsyn();// 异步搜索
         }
-    }
-
-    @Override
-    public void onPoiItemSearched(PoiItem arg0, int arg1) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onPoiSearched(PoiResult result, int rcode) {
-        if (rcode == AMapException.CODE_AMAP_SUCCESS) {
-            if (result != null && result.getQuery() != null) {// 搜索poi的结果
-                if (result.getQuery().equals(query)) {// 是否是同一条
-                    poiItems = result.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-                    List<SuggestionCity> suggestionCities = result
-                            .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
-                    if (poiItems != null && poiItems.size() > 0) {
-                        //清除POI信息显示
-                        whetherToShowDetailInfo(false);
-                        //并还原点击marker样式
-                        if (lastMarker != null) {
-                            resetLastMarker();
-                        }
-                        //清理之前搜索结果的marker
-                        if (poiOverlay != null) {
-                            poiOverlay.removeFromMap();
-                        }
-                        poiOverlay = new MyPoiOverlay(mAMap, poiItems);
-                        poiOverlay.addToMap();
-                        //poiOverlay.zoomToSpan();
-                        focusLocation();
-
-                    } else if (suggestionCities != null
-                            && suggestionCities.size() > 0) {
-                        showSuggestCity(suggestionCities);
-                    } else {
-                        showToast(R.string.no_result);
-                    }
-                }
-            } else {
-                showToast(R.string.no_result);
-            }
-        }
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        if (marker.getObject() != null) {
-            whetherToShowDetailInfo(true);
-            try {
-                PoiItem mCurrentPoi = (PoiItem) marker.getObject();
-                if (lastMarker == null) {
-                    lastMarker = marker;
-                } else {
-                    // 将之前被点击的marker置为原来的状态
-                    resetLastMarker();
-                    lastMarker = marker;
-                }
-                Marker detailMarker = marker;
-                detailMarker.setIcon(BitmapDescriptorFactory
-                        .fromBitmap(BitmapFactory.decodeResource(
-                                getResources(),
-                                R.drawable.poi_marker_pressed)));
-
-                setPoiItemDisplayContent(mCurrentPoi);
-            } catch (Exception e) {
-                // TODO: handle exception
-            }
-        } else {
-            whetherToShowDetailInfo(false);
-            resetLastMarker();
-        }
-        return true;
     }
 
     // 将之前被点击的marker置为原来的状态
@@ -235,26 +254,6 @@ public class MapPOIActivity extends BaseLocationDirectionActivity
         mPoiAddress.setText(mCurrentPoi.getSnippet() + mCurrentPoi.getDistance());
     }
 
-    @Override
-    public View getInfoContents(Marker arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-    @Override
-    public View getInfoWindow(Marker arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-    @Override
-    public void onInfoWindowClick(Marker arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
     private int[] markers = {R.drawable.poi_marker_1,
             R.drawable.poi_marker_2,
             R.drawable.poi_marker_3,
@@ -274,14 +273,6 @@ public class MapPOIActivity extends BaseLocationDirectionActivity
         } else {
             mPoiDetail.setVisibility(View.GONE);
             locationButton.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onMapClick(LatLng arg0) {
-        whetherToShowDetailInfo(false);
-        if (lastMarker != null) {
-            resetLastMarker();
         }
     }
 
