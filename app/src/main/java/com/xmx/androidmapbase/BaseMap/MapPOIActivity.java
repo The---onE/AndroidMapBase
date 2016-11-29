@@ -75,10 +75,10 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                         }
                         //清理之前搜索结果的marker
                         if (poiOverlay != null) {
-                            poiOverlay.removeFromMap();
+                            poiOverlay.removeAllFromMap();
                         }
                         poiOverlay = new POIOverlay(mAMap, poiItems, getBaseContext());
-                        poiOverlay.addToMap();
+                        poiOverlay.addAllToMap();
                         //poiOverlay.zoomToSpan();
                         focusLocation();
                     }
@@ -104,7 +104,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
     private void onCancelClick(View view) {
         mSearchText.setText("");
         if (poiOverlay != null) {
-            poiOverlay.removeFromMap();
+            poiOverlay.removeAllFromMap();
             poiOverlay = null;
         }
     }

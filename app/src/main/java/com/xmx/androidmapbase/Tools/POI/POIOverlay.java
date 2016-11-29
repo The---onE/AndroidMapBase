@@ -13,6 +13,7 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.PoiItem;
 import com.xmx.androidmapbase.R;
+import com.xmx.androidmapbase.Tools.Map.BaseOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,62 +22,27 @@ import java.util.List;
  * Created by The_onE on 2016/11/28.
  */
 
-public class POIOverlay {
-    private AMap mAMap;
-    private List<PoiItem> mPois;
-    private ArrayList<Marker> mPoiMarks = new ArrayList<Marker>();
-    private Context mContext;
+public class POIOverlay extends BaseOverlay {
+    private List<PoiItem> mPOIs;
 
-    public POIOverlay(AMap amap, List<PoiItem> pois, Context context) {
-        mAMap = amap;
-        mPois = pois;
-        mContext = context;
+    public POIOverlay(AMap amap, List<PoiItem> POIs, Context context) {
+        super(amap, context);
+        mPOIs = POIs;
     }
 
-    /**
-     * 添加Marker到地图中。
-     *
-     * @since V2.1.0
-     */
-    public void addToMap() {
-        for (int i = 0; i < mPois.size(); i++) {
-            Marker marker = mAMap.addMarker(getMarkerOptions(i));
-            PoiItem item = mPois.get(i);
+    public void addAllToMap() {
+        for (int i = 0; i < mPOIs.size(); i++) {
+            Marker marker = addToMap(getMarkerOptions(i));
+            PoiItem item = mPOIs.get(i);
             marker.setObject(item);
-            mPoiMarks.add(marker);
-        }
-    }
-
-    /**
-     * 去掉PoiOverlay上所有的Marker。
-     *
-     * @since V2.1.0
-     */
-    public void removeFromMap() {
-        for (Marker mark : mPoiMarks) {
-            mark.remove();
-        }
-    }
-
-    /**
-     * 移动镜头到当前的视角。
-     *
-     * @since V2.1.0
-     */
-    public void zoomToSpan() {
-        if (mPois != null && mPois.size() > 0) {
-            if (mAMap == null)
-                return;
-            LatLngBounds bounds = getLatLngBounds();
-            mAMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
         }
     }
 
     private LatLngBounds getLatLngBounds() {
         LatLngBounds.Builder b = LatLngBounds.builder();
-        for (int i = 0; i < mPois.size(); i++) {
-            b.include(new LatLng(mPois.get(i).getLatLonPoint().getLatitude(),
-                    mPois.get(i).getLatLonPoint().getLongitude()));
+        for (int i = 0; i < mPOIs.size(); i++) {
+            b.include(new LatLng(mPOIs.get(i).getLatLonPoint().getLatitude(),
+                    mPOIs.get(i).getLatLonPoint().getLongitude()));
         }
         return b.build();
     }
@@ -84,19 +50,20 @@ public class POIOverlay {
     private MarkerOptions getMarkerOptions(int index) {
         return new MarkerOptions()
                 .position(
-                        new LatLng(mPois.get(index).getLatLonPoint()
-                                .getLatitude(), mPois.get(index)
+                        new LatLng(mPOIs.get(index).getLatLonPoint()
+                                .getLatitude(), mPOIs.get(index)
                                 .getLatLonPoint().getLongitude()))
-                .title(getTitle(index)).snippet(getSnippet(index))
+                .title(getTitle(index))
+                .snippet(getSnippet(index))
                 .icon(getBitmapDescriptor(index));
     }
 
     protected String getTitle(int index) {
-        return mPois.get(index).getTitle();
+        return mPOIs.get(index).getTitle();
     }
 
     protected String getSnippet(int index) {
-        return mPois.get(index).getSnippet();
+        return mPOIs.get(index).getSnippet();
     }
 
     /**
@@ -107,8 +74,8 @@ public class POIOverlay {
      * @since V2.1.0
      */
     public int getPoiIndex(Marker marker) {
-        for (int i = 0; i < mPoiMarks.size(); i++) {
-            if (mPoiMarks.get(i).equals(marker)) {
+        for (int i = 0; i < mMarkers.size(); i++) {
+            if (mMarkers.get(i).equals(marker)) {
                 return i;
             }
         }
@@ -123,10 +90,10 @@ public class POIOverlay {
      * @since V2.1.0
      */
     public PoiItem getPoiItem(int index) {
-        if (index < 0 || index >= mPois.size()) {
+        if (index < 0 || index >= mPOIs.size()) {
             return null;
         }
-        return mPois.get(index);
+        return mPOIs.get(index);
     }
 
     protected BitmapDescriptor getBitmapDescriptor(int arg0) {
