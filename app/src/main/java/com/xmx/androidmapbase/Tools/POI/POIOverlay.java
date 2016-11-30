@@ -4,18 +4,15 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.PoiItem;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.Map.BaseOverlay;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,38 +29,22 @@ public class POIOverlay extends BaseOverlay {
 
     public void addAllToMap() {
         for (int i = 0; i < mPOIs.size(); i++) {
-            Marker marker = addToMap(getMarkerOptions(i));
             PoiItem item = mPOIs.get(i);
+            MarkerOptions markerOptions = getMarkerOptions(item, getBitmapDescriptor(i));
+            Marker marker = addToMap(markerOptions);
             marker.setObject(item);
         }
     }
 
-    private LatLngBounds getLatLngBounds() {
-        LatLngBounds.Builder b = LatLngBounds.builder();
-        for (int i = 0; i < mPOIs.size(); i++) {
-            b.include(new LatLng(mPOIs.get(i).getLatLonPoint().getLatitude(),
-                    mPOIs.get(i).getLatLonPoint().getLongitude()));
-        }
-        return b.build();
-    }
-
-    private MarkerOptions getMarkerOptions(int index) {
+    private MarkerOptions getMarkerOptions(PoiItem poi, BitmapDescriptor bitmap) {
         return new MarkerOptions()
                 .position(
-                        new LatLng(mPOIs.get(index).getLatLonPoint()
-                                .getLatitude(), mPOIs.get(index)
+                        new LatLng(poi.getLatLonPoint()
+                                .getLatitude(), poi
                                 .getLatLonPoint().getLongitude()))
-                .title(getTitle(index))
-                .snippet(getSnippet(index))
-                .icon(getBitmapDescriptor(index));
-    }
-
-    protected String getTitle(int index) {
-        return mPOIs.get(index).getTitle();
-    }
-
-    protected String getSnippet(int index) {
-        return mPOIs.get(index).getSnippet();
+                .title(poi.getTitle())
+                .snippet(poi.getSnippet())
+                .icon(bitmap);
     }
 
     /**
@@ -98,15 +79,13 @@ public class POIOverlay extends BaseOverlay {
 
     protected BitmapDescriptor getBitmapDescriptor(int arg0) {
         if (arg0 < POIConstants.MARKERS.length) {
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(
+            return BitmapDescriptorFactory.fromBitmap(
                     BitmapFactory.decodeResource(mContext.getResources(),
                             POIConstants.MARKERS[arg0]));
-            return icon;
         } else {
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(
+            return BitmapDescriptorFactory.fromBitmap(
                     BitmapFactory.decodeResource(mContext.getResources(),
                             R.drawable.marker_other_highlight));
-            return icon;
         }
     }
 }
