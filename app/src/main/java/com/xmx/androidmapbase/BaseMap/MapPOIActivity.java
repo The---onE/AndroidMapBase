@@ -15,10 +15,10 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
-import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationDirectionActivity;
+import com.xmx.androidmapbase.Tools.Map.POI.POI;
 import com.xmx.androidmapbase.Tools.Map.Utils.ToastUtil;
 import com.xmx.androidmapbase.Tools.Map.POI.POIConstants;
 import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
@@ -65,7 +65,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                 keyword, "", "",
                 new POISearchCallback() {
                     @Override
-                    public void success(List<PoiItem> poiItems) {
+                    public void success(List<POI> poiItems) {
                         //清除POI信息显示
                         whetherToShowDetailInfo(false);
                         //并还原点击marker样式
@@ -145,7 +145,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                 if (marker.getObject() != null) {
                     whetherToShowDetailInfo(true);
                     try {
-                        PoiItem mCurrentPoi = (PoiItem) marker.getObject();
+                        POI mCurrentPoi = (POI) marker.getObject();
                         if (lastMarker == null) {
                             lastMarker = marker;
                         } else {
@@ -214,7 +214,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
 
     }
 
-    private void setPoiItemDisplayContent(final PoiItem mCurrentPoi) {
+    private void setPoiItemDisplayContent(final POI mCurrentPoi) {
         mPoiName.setText(mCurrentPoi.getTitle());
         mPoiAddress.setText(mCurrentPoi.getSnippet() + mCurrentPoi.getDistance());
     }

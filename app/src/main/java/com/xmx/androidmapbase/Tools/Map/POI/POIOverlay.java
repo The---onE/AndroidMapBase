@@ -20,16 +20,16 @@ import java.util.List;
  */
 
 public class POIOverlay extends BaseOverlay {
-    private List<PoiItem> mPOIs;
+    private List<POI> mPOIs;
 
-    public POIOverlay(AMap amap, List<PoiItem> POIs, Context context) {
+    public POIOverlay(AMap amap, List<POI> POIs, Context context) {
         super(amap, context);
         mPOIs = POIs;
     }
 
     public void addAllToMap() {
         for (int i = 0; i < mPOIs.size(); i++) {
-            PoiItem item = mPOIs.get(i);
+            POI item = mPOIs.get(i);
             MarkerOptions markerOptions = getMarkerOptions(item, getBitmapDescriptor(i));
             Marker marker = addToMap(markerOptions);
             marker.setObject(item);
@@ -70,7 +70,7 @@ public class POIOverlay extends BaseOverlay {
      * @return poi的信息。poi对象详见搜索服务模块的基础核心包（com.amap.api.services.core）中的类 <strong><a href="../../../../../../Search/com/amap/api/services/core/PoiItem.html" title="com.amap.api.services.core中的类">PoiItem</a></strong>。
      * @since V2.1.0
      */
-    public PoiItem getPoiItem(int index) {
+    public POI getPOI(int index) {
         if (index < 0 || index >= mPOIs.size()) {
             return null;
         }

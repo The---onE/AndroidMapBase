@@ -10,6 +10,7 @@ import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,9 +41,9 @@ public class POIManager {
      * 开始进行poi搜索
      */
     public void searchPOIQuery(LatLng location, int radius,
-                                 int page, int size,
-                                 String keyword, String type, String area,
-                                 final POISearchCallback callback) {
+                               int page, int size,
+                               String keyword, String type, String area,
+                               final POISearchCallback callback) {
         if (size <= 0) {
             size = DEFAULT_SEARCH_SIZE;
         }
@@ -61,11 +62,13 @@ public class POIManager {
                 if (poiCode == AMapException.CODE_AMAP_SUCCESS) {
                     if (poiResult != null && poiResult.getQuery() != null) {// 搜索poi的结果
                         if (poiResult.getQuery().equals(query)) {// 是否是同一条
-                            List<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
+                            // 取得第一页的poiitem数据，页数从数字0开始
+                            List<POI> poiList = convertPOIList(poiResult.getPois());
+                            // 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
                             List<SuggestionCity> suggestionCities = poiResult
-                                    .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
-                            if (poiItems != null && poiItems.size() > 0) {
-                                callback.success(poiItems);
+                                    .getSearchSuggestionCitys();
+                            if (poiList != null && poiList.size() > 0) {
+                                callback.success(poiList);
                             } else if (suggestionCities != null
                                     && suggestionCities.size() > 0) {
                                 callback.suggest(suggestionCities);
@@ -86,10 +89,18 @@ public class POIManager {
 
             }
         });
+        // 设置搜索区域为以当前位置为圆心，其周围范围
         poiSearch.setBound(new PoiSearch.SearchBound(
                 new LatLonPoint(location.latitude, location.longitude),
                 radius, true));//
-        // 设置搜索区域为以当前位置为圆心，其周围范围
         poiSearch.searchPOIAsyn();// 异步搜索
+    }
+
+    private List<POI> convertPOIList(List<PoiItem> list) {
+        List<POI> poiList = new ArrayList<>();
+        for (PoiItem poiItem :list) {
+            poiList.add(new POI(poiItem));
+        }
+        return poiList;
     }
 }

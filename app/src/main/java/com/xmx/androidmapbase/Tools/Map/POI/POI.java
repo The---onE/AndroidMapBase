@@ -16,20 +16,19 @@ import java.util.Date;
 public class POI extends PoiItem implements ISQLEntity {
 
     public long mId = -1;
-    public String mPoiId;
-    public double mLatitude;
-    public double mLongitude;
-    public String mTitle;
-    public String mSnippet;
     public Date mTime;
-
-    private boolean dataFlag = false; //true表示有拓展数据,false表示只有基类数据
 
     public POI(String id,
                LatLonPoint point,
                String title,
                String snippet) {
         super(id, point, title, snippet);
+        mTime = new Date();
+    }
+
+    public POI(PoiItem o) {
+        super(o.getPoiId(), o.getLatLonPoint(), o.getTitle(), o.getSnippet());
+        mTime = new Date();
     }
 
     @Override
@@ -49,21 +48,12 @@ public class POI extends PoiItem implements ISQLEntity {
         if (mId > 0) {
             content.put("ID", mId);
         }
-        if (dataFlag) {
-            content.put("PoiId", mPoiId);
-            content.put("Latitude", mLatitude);
-            content.put("Longitude", mLongitude);
-            content.put("Title", mTitle);
-            content.put("Snippet", mSnippet);
-            content.put("Time", mTime.getTime());
-        } else {
-            content.put("PoiId", getPoiId());
-            content.put("Latitude", getLatLonPoint().getLatitude());
-            content.put("Longitude", getLatLonPoint().getLongitude());
-            content.put("Title", getTitle());
-            content.put("Snippet", getSnippet());
-            content.put("Time", new Date().getTime());
-        }
+        content.put("PoiId", getPoiId());
+        content.put("Latitude", getLatLonPoint().getLatitude());
+        content.put("Longitude", getLatLonPoint().getLongitude());
+        content.put("Title", getTitle());
+        content.put("Snippet", getSnippet());
+        content.put("Time", mTime.getTime());
         return content;
     }
 
@@ -79,13 +69,7 @@ public class POI extends PoiItem implements ISQLEntity {
 
         POI entity = new POI(PoiId, new LatLonPoint(latitude, longitude), title, snippet);
         entity.mId = id;
-        entity.mPoiId = PoiId;
-        entity.mLatitude = latitude;
-        entity.mLongitude = longitude;
-        entity.mTitle = title;
-        entity.mSnippet = snippet;
         entity.mTime = time;
-        dataFlag = true;
 
         return entity;
     }

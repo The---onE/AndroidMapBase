@@ -1,10 +1,6 @@
 package com.xmx.androidmapbase.Tools.Map.POI;
 
-import com.amap.api.services.core.AMapException;
-import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
 
 import java.util.List;
 
@@ -13,7 +9,7 @@ import java.util.List;
  */
 public abstract class POISearchCallback {
 
-    public abstract void success(List<PoiItem> poiItems);
+    public abstract void success(List<POI> poiItems);
 
     public abstract void suggest(List<SuggestionCity> cities);
 
