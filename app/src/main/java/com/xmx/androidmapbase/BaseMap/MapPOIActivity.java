@@ -19,17 +19,16 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationDirectionActivity;
-import com.xmx.androidmapbase.Tools.MapUtils.ToastUtil;
-import com.xmx.androidmapbase.Tools.POI.POIConstants;
-import com.xmx.androidmapbase.Tools.POI.POIManager;
-import com.xmx.androidmapbase.Tools.POI.POIOverlay;
-import com.xmx.androidmapbase.Tools.POI.POISearchCallback;
+import com.xmx.androidmapbase.Tools.Map.Utils.ToastUtil;
+import com.xmx.androidmapbase.Tools.Map.POI.POIConstants;
+import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
+import com.xmx.androidmapbase.Tools.Map.POI.POIOverlay;
+import com.xmx.androidmapbase.Tools.Map.POI.POISearchCallback;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ContentView(R.layout.activity_map_poi)

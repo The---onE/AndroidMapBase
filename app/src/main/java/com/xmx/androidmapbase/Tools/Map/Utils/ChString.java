@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.Tools.MapUtils;
+package com.xmx.androidmapbase.Tools.Map.Utils;
 
 public class ChString {
 	public static final String Kilometer = "\u516c\u91cc";// "公里";

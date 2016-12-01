@@ -14,7 +14,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.MapUtils.SensorEventHelper;
+import com.xmx.androidmapbase.Tools.Map.Utils.SensorEventHelper;
 
 import org.xutils.view.annotation.ContentView;
 

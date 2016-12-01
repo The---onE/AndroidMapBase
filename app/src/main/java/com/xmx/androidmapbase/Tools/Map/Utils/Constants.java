@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.Tools.MapUtils;
+package com.xmx.androidmapbase.Tools.Map.Utils;
 
 import com.amap.api.maps.model.LatLng;
 

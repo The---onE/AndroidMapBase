@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.Tools.POI;
+package com.xmx.androidmapbase.Tools.Map.POI;
 
 import android.content.Context;
 

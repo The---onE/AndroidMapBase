@@ -6,7 +6,7 @@ import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVOSCloud;
 import com.xmx.androidmapbase.Tools.CrashHandler;
 import com.xmx.androidmapbase.Tools.Data.DataManager;
-import com.xmx.androidmapbase.Tools.POI.POIManager;
+import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
 import com.xmx.androidmapbase.User.UserManager;
 
 import org.xutils.x;
