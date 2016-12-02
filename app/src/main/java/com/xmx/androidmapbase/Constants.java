@@ -13,7 +13,7 @@ public class Constants {
     public static final String USER_DATA_TABLE = "UserData";
     public static final String LOGIN_LOG_TABLE = "LoginLog";
 
-    public static final String FILE_DIR = "/Framework";
+    public static final String FILE_DIR = "/MapFramework";
     public static final String DATABASE_DIR = FILE_DIR + "/Database";
     public static final String DATABASE_FILE = DATABASE_DIR + "/database.db";
 
