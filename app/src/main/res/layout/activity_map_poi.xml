@@ -11,13 +11,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/btn_location"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="@string/location" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/location" />
+
+        <Button
+            android:id="@+id/btn_collect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/collect"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_collect_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/search_bar_layout"

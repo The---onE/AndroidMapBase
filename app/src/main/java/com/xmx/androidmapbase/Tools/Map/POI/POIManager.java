@@ -100,7 +100,6 @@ public class POIManager {
         List<POI> poiList = new ArrayList<>();
         for (PoiItem poiItem :list) {
             poiList.add(new POI(poiItem));
-            //POISQLManager.getInstance().insertData(new POI(poiItem));
         }
         return poiList;
     }

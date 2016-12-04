@@ -1,8 +1,10 @@
 package com.xmx.androidmapbase.BaseMap;
 
+import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,10 +17,13 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.SuggestionCity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Map.POI.POI;
+import com.xmx.androidmapbase.Tools.Map.POI.POISQLManager;
 import com.xmx.androidmapbase.Tools.Map.Utils.ToastUtil;
 import com.xmx.androidmapbase.Tools.Map.POI.POIConstants;
 import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
@@ -29,13 +34,19 @@ import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @ContentView(R.layout.activity_map_poi)
 public class MapPOIActivity extends BaseLocationDirectionActivity {
 
     private Marker lastMarker;
     private POIOverlay poiOverlay;// poi图层
+
+    private Marker currentMarker;
+    private LatLng currentLatLng;
+    private List<Marker> collectMarkers = new ArrayList<>();
 
     @ViewInject(R.id.poi_name)
     private TextView mPoiName;
@@ -47,7 +58,13 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
     private EditText mSearchText;
 
     @ViewInject(R.id.btn_location)
-    Button locationButton;
+    private Button locationButton;
+
+    @ViewInject(R.id.btn_collect)
+    private Button collectButton;
+
+    @ViewInject(R.id.btn_collect_cancel)
+    private Button cancelCollectButton;
 
     @ViewInject(R.id.poi_detail)
     private RelativeLayout mPoiDetail;
@@ -108,6 +125,43 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
         }
     }
 
+    @Event(R.id.btn_collect)
+    private void onCollectClick(View view) {
+        if (currentMarker == null || currentLatLng == null) {
+            return;
+        }
+        final EditText edit = new EditText(this);
+        edit.setTextColor(Color.BLACK);
+        edit.setTextSize(24);
+        new AlertDialog.Builder(MapPOIActivity.this)
+                .setTitle("添加收藏")
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setView(edit)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String title = edit.getText().toString();
+                        POI poi = new POI(UUID.randomUUID().toString(),
+                                new LatLonPoint(currentLatLng.latitude, currentLatLng.longitude),
+                                title, "");
+                        POISQLManager.getInstance().insertData(poi);
+                        addCollectMarker(poi);
+                        showToast("收藏成功");
+                    }
+                })
+                .setNegativeButton("取消", null).show();
+    }
+
+    @Event(R.id.btn_collect_cancel)
+    private void onCancelCollectClick(View view) {
+        if (currentMarker != null) {
+            currentMarker.remove();
+            currentMarker = null;
+        }
+        cancelCollectButton.setVisibility(View.GONE);
+        collectButton.setVisibility(View.GONE);
+    }
+
     @Event(R.id.poi_detail)
     private void onDetailClick(View view) {
         //打开地点详情
@@ -137,6 +191,24 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                 if (lastMarker != null) {
                     resetLastMarker();
                 }
+
+                if (currentMarker != null) {
+                    currentMarker.remove();
+                    currentMarker = null;
+                }
+                MarkerOptions m = new MarkerOptions()
+                        .position(
+                                new LatLng(latLng.latitude, latLng.longitude))
+                        .icon(BitmapDescriptorFactory
+                                .fromBitmap(BitmapFactory.decodeResource(
+                                        getResources(),
+                                        R.drawable.point6)))
+                        .anchor(0.5f, 0.5f);
+                currentMarker = mAMap.addMarker(m);
+                currentLatLng = latLng;
+
+                collectButton.setVisibility(View.VISIBLE);
+                cancelCollectButton.setVisibility(View.VISIBLE);
             }
         });
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
@@ -161,7 +233,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
 
                         setPoiItemDisplayContent(mCurrentPoi);
                     } catch (Exception e) {
-                        // TODO: handle exception
+                        filterException(e);
                     }
                 } else {
                     whetherToShowDetailInfo(false);
@@ -170,24 +242,24 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                 return true;
             }
         });
-        mAMap.setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-
-            }
-        });
-
-        mAMap.setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-                return null;
-            }
-        });
+//        mAMap.setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
+//            @Override
+//            public void onInfoWindowClick(Marker marker) {
+//
+//            }
+//        });
+//
+//        mAMap.setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
+//            @Override
+//            public View getInfoWindow(Marker marker) {
+//                return null;
+//            }
+//
+//            @Override
+//            public View getInfoContents(Marker marker) {
+//                return null;
+//            }
+//        });
     }
 
     @Override
@@ -196,6 +268,23 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
 
         mAMap.getUiSettings().setMyLocationButtonEnabled(false);//设置默认定位按钮是否显示
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
+
+        List<POI> poiList = POISQLManager.getInstance().selectAll();
+        for (POI poi : poiList) {
+            addCollectMarker(poi);
+        }
+    }
+
+    private void addCollectMarker(POI poi) {
+        MarkerOptions m = new MarkerOptions()
+                .position(new LatLng(poi.getLatLonPoint().getLatitude(),
+                        poi.getLatLonPoint().getLongitude()))
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(BitmapFactory.decodeResource(
+                                getResources(),
+                                R.drawable.point5)))
+                .anchor(0.5f, 0.5f);
+        collectMarkers.add(mAMap.addMarker(m));
     }
 
     // 将之前被点击的marker置为原来的状态
