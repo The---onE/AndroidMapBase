@@ -13,6 +13,8 @@ public abstract class BaseLocationActivity extends BaseMapActivity implements Lo
 
     protected LatLng mLocation; //当前位置
 
+    protected boolean backgroundLocation = false; //是否后台继续定位
+
     private AMapLocationClient mLocationClient; //定位器
     private OnLocationChangedListener mListener; //定位监听器
 
@@ -64,6 +66,22 @@ public abstract class BaseLocationActivity extends BaseMapActivity implements Lo
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (!backgroundLocation) {
+            startLocation();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (!backgroundLocation) {
+            stopLocation();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         deactivate();
@@ -78,6 +96,24 @@ public abstract class BaseLocationActivity extends BaseMapActivity implements Lo
     protected void focusLocation(float scale) {
         if (mLocation != null) {
             focusLocation(mLocation, scale);
+        }
+    }
+
+    protected boolean startLocation() {
+        if (mLocationClient != null) {
+            mLocationClient.startLocation();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected boolean stopLocation() {
+        if (mLocationClient != null) {
+            mLocationClient.stopLocation();
+            return true;
+        } else {
+            return false;
         }
     }
 }
