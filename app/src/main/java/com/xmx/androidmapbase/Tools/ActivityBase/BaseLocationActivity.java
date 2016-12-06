@@ -17,6 +17,7 @@ public abstract class BaseLocationActivity extends BaseMapActivity implements Lo
 
     private AMapLocationClient mLocationClient; //定位器
     private OnLocationChangedListener mListener; //定位监听器
+    private boolean initFlag = false;
 
     protected abstract void whenLocationChanged(AMapLocation aMapLocation);
     protected abstract void whenLocationError(int errorCode, String errorInfo);
@@ -100,10 +101,11 @@ public abstract class BaseLocationActivity extends BaseMapActivity implements Lo
     }
 
     protected boolean startLocation() {
-        if (mLocationClient != null) {
+        if (initFlag && mLocationClient != null) {
             mLocationClient.startLocation();
             return true;
         } else {
+            initFlag = true;
             return false;
         }
     }
