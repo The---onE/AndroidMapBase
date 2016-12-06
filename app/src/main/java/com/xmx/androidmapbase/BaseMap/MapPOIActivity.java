@@ -20,9 +20,15 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.SuggestionCity;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationDirectionActivity;
+import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
+import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
+import com.xmx.androidmapbase.Tools.Data.DataConstants;
 import com.xmx.androidmapbase.Tools.Map.POI.POI;
+import com.xmx.androidmapbase.Tools.Map.POI.POICloudManager;
 import com.xmx.androidmapbase.Tools.Map.POI.POISQLManager;
 import com.xmx.androidmapbase.Tools.Map.Utils.ToastUtil;
 import com.xmx.androidmapbase.Tools.Map.POI.POIConstants;
@@ -141,12 +147,43 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String title = edit.getText().toString();
-                        POI poi = new POI(UUID.randomUUID().toString(),
+                        final POI poi = new POI(UUID.randomUUID().toString(),
                                 new LatLonPoint(currentLatLng.latitude, currentLatLng.longitude),
                                 title, "");
-                        POISQLManager.getInstance().insertData(poi);
-                        addCollectMarker(poi);
-                        showToast("收藏成功");
+//                        POISQLManager.getInstance().insertData(poi);
+//                        addCollectMarker(poi);
+//                        showToast("收藏成功");
+                        POICloudManager.getInstance().insertToCloud(poi, new InsertCallback() {
+                            @Override
+                            public void success(AVObject user, String objectId) {
+                                addCollectMarker(poi);
+                                showToast("收藏成功");
+                            }
+
+                            @Override
+                            public void syncError(int error) {
+                                switch (error) {
+                                    case DataConstants.NOT_INIT:
+                                        showToast(R.string.failure);
+                                        break;
+                                    case DataConstants.NOT_LOGGED_IN:
+                                        showToast(R.string.not_loggedin);
+                                        break;
+                                    case DataConstants.USERNAME_ERROR:
+                                        showToast(R.string.username_error);
+                                        break;
+                                    case DataConstants.CHECKSUM_ERROR:
+                                        showToast(R.string.not_loggedin);
+                                        break;
+                                }
+                            }
+
+                            @Override
+                            public void syncError(AVException e) {
+                                showToast(R.string.sync_failure);
+                                filterException(e);
+                            }
+                        });
                     }
                 })
                 .setNegativeButton("取消", null).show();
@@ -269,10 +306,42 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
         mAMap.getUiSettings().setMyLocationButtonEnabled(false);//设置默认定位按钮是否显示
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
 
-        List<POI> poiList = POISQLManager.getInstance().selectAll();
-        for (POI poi : poiList) {
-            addCollectMarker(poi);
-        }
+//        List<POI> poiList = POISQLManager.getInstance().selectAll();
+//        for (POI poi : poiList) {
+//            addCollectMarker(poi);
+//        }
+        POICloudManager.getInstance().selectByCondition(null, "Time", false, new SelectCallback<POI>() {
+            @Override
+            public void success(AVObject user, List<POI> poiList) {
+                for (POI poi : poiList) {
+                    addCollectMarker(poi);
+                }
+            }
+
+            @Override
+            public void syncError(int error) {
+                switch (error) {
+                    case DataConstants.NOT_INIT:
+                        showToast(R.string.failure);
+                        break;
+                    case DataConstants.NOT_LOGGED_IN:
+                        showToast(R.string.not_loggedin);
+                        break;
+                    case DataConstants.USERNAME_ERROR:
+                        showToast(R.string.username_error);
+                        break;
+                    case DataConstants.CHECKSUM_ERROR:
+                        showToast(R.string.not_loggedin);
+                        break;
+                }
+            }
+
+            @Override
+            public void syncError(AVException e) {
+                showToast(R.string.sync_failure);
+                filterException(e);
+            }
+        });
     }
 
     private void addCollectMarker(POI poi) {

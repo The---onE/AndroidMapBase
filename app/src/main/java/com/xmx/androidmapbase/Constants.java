@@ -6,8 +6,8 @@ package com.xmx.androidmapbase;
 public class Constants {
     public static final boolean EXCEPTION_DEBUG = true;
 
-    public static final String APP_ID = "vBb01A8F2LI63zJBqkQWiuWc-gzGzoHsz";
-    public static final String APP_KEY = "tfMtJ1uRTmRre40QhxT46yVl";
+    public static final String APP_ID = "wJMjIRbGcFS3FAxl2TutNTNE-gzGzoHsz  ";
+    public static final String APP_KEY = "cX2KTzLuyKPvss5xQxv6xsWO";
 
     public static final String USER_INFO_TABLE = "UserInfo";
     public static final String USER_DATA_TABLE = "UserData";
