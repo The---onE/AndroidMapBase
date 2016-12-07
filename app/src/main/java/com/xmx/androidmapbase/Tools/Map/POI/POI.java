@@ -8,6 +8,7 @@ import com.amap.api.services.core.PoiItem;
 import com.avos.avoscloud.AVObject;
 import com.xmx.androidmapbase.Tools.Data.Cloud.ICloudEntity;
 import com.xmx.androidmapbase.Tools.Data.SQL.ISQLEntity;
+import com.xmx.androidmapbase.Tools.Data.Sync.ISyncEntity;
 
 import java.util.Date;
 
@@ -15,7 +16,7 @@ import java.util.Date;
  * Created by The_onE on 2016/12/1.
  */
 
-public class POI extends PoiItem implements ISQLEntity, ICloudEntity{
+public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntity {
 
     public long mId = -1;
     public String mCloudId = null;
@@ -119,5 +120,15 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity{
         entity.mTime = time;
 
         return entity;
+    }
+
+    @Override
+    public String getCloudId() {
+        return mCloudId;
+    }
+
+    @Override
+    public void setCloudId(String id) {
+        mCloudId = id;
     }
 }
