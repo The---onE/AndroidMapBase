@@ -83,7 +83,11 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
     @Event(R.id.btn_search)
     private void onSearchClick(View view) {
         String keyword = mSearchText.getText().toString().trim();
-        POIManager.getInstance().searchPOIQuery(mLocation, 0,
+        LatLng position = mLocation;
+        if (currentLatLng != null) {
+            position = currentLatLng;
+        }
+        POIManager.getInstance().searchPOIQuery(position, 0,
                 0, 0,
                 keyword, "", "",
                 new POISearchCallback() {
@@ -102,7 +106,11 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                         poiOverlay = new POIOverlay(mAMap, poiItems, getBaseContext());
                         poiOverlay.addAllToMap();
                         //poiOverlay.zoomToSpan();
-                        focusLocation();
+                        if (currentLatLng != null) {
+                            focusLocation(currentLatLng);
+                        } else {
+                            focusLocation();
+                        }
                     }
 
                     @Override
