@@ -310,9 +310,9 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
 //        for (POI poi : poiList) {
 //            addCollectMarker(poi);
 //        }
-        POICloudManager.getInstance().selectByCondition(null, "Time", false, new SelectCallback<POI>() {
+        POICloudManager.getInstance().selectAll(new SelectCallback<POI>() {
             @Override
-            public void success(AVObject user, List<POI> poiList) {
+            public void success(List<POI> poiList) {
                 for (POI poi : poiList) {
                     addCollectMarker(poi);
                 }
