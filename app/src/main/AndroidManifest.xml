@@ -86,6 +86,8 @@
         <activity android:name=".BaseMap.MapActivity"></activity>
         <activity android:name=".BaseMap.MapPOIActivity"></activity>
         <activity android:name=".BaseMap.MapRouteActivity"></activity>
+
+        <activity android:name=".Tools.Map.Route.WalkRouteDetailActivity"></activity>
     </application>
 
 </manifest>

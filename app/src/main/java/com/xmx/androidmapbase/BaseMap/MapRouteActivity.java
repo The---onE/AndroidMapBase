@@ -41,7 +41,10 @@ import com.xmx.androidmapbase.Tools.Map.POI.POIConstants;
 import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
 import com.xmx.androidmapbase.Tools.Map.POI.POIOverlay;
 import com.xmx.androidmapbase.Tools.Map.POI.POISearchCallback;
+import com.xmx.androidmapbase.Tools.Map.Route.WalkRouteDetailActivity;
 import com.xmx.androidmapbase.Tools.Map.Route.WalkRouteOverlay;
+import com.xmx.androidmapbase.Tools.Map.Utils.AMapServicesUtil;
+import com.xmx.androidmapbase.Tools.Map.Utils.AMapUtil;
 import com.xmx.androidmapbase.Tools.Map.Utils.ToastUtil;
 
 import org.xutils.view.annotation.ContentView;
@@ -59,6 +62,8 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
     private WalkRouteResult mWalkRouteResult;
     private WalkRouteOverlay mWalkRouteOverlay;
 
+    private Marker subMarker;
+    private LatLng subLatLng;
     private Marker currentMarker;
     private LatLng currentLatLng;
     private List<Marker> collectMarkers = new ArrayList<>();
@@ -66,9 +71,24 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
     @ViewInject(R.id.btn_route)
     private Button routeButton;
 
+    @ViewInject(R.id.bottom_layout)
+    private RelativeLayout bottomLayout;
+
+    @ViewInject(R.id.firstline)
+    private TextView routeTimeDesView;
+
+    @ViewInject(R.id.secondline)
+    private TextView routeDetailDesView;
+
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
         focusLocation();
+    }
+
+    @Event(R.id.cancel_route)
+    private void onCancelRouteClick(View view) {
+        bottomLayout.setVisibility(View.GONE);
+        mWalkRouteOverlay.removeFromMap();
     }
 
     @Event(R.id.btn_route)
@@ -80,11 +100,16 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
         if (currentLatLng == null) {
             showToast("终点未设置");
         }
-
+        LatLonPoint start;
+        if (subLatLng != null) {
+            start = AMapServicesUtil.convertToLatLonPoint(subLatLng);
+        } else {
+            start = AMapServicesUtil.convertToLatLonPoint(mLocation);
+        }
+        LatLonPoint end = AMapServicesUtil.convertToLatLonPoint(currentLatLng);
         showToast("正在搜索");
         final RouteSearch.FromAndTo fromAndTo
-                = new RouteSearch.FromAndTo(
-                new LatLonPoint(mLocation.latitude, mLocation.longitude),
+                = new RouteSearch.FromAndTo(start,
                 new LatLonPoint(currentLatLng.latitude, currentLatLng.longitude));
 
         RouteSearch.WalkRouteQuery query
@@ -130,6 +155,27 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
                 routeButton.setVisibility(View.VISIBLE);
             }
         });
+        mAMap.setOnMapLongClickListener(new AMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (subMarker != null) {
+                    subMarker.remove();
+                    subMarker = null;
+                    subLatLng = null;
+                    return;
+                }
+                MarkerOptions m = new MarkerOptions()
+                        .position(
+                                new LatLng(latLng.latitude, latLng.longitude))
+                        .icon(BitmapDescriptorFactory
+                                .fromBitmap(BitmapFactory.decodeResource(
+                                        getResources(),
+                                        R.drawable.point3)))
+                        .anchor(0.5f, 0.5f);
+                subMarker = mAMap.addMarker(m);
+                subLatLng = latLng;
+            }
+        });
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -141,7 +187,7 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
                         return true;
                     }
                 }
-                return true;
+                return false;
             }
         });
 
@@ -174,23 +220,22 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
                                     mWalkRouteResult.getTargetPos());
                             mWalkRouteOverlay.addToMap();
                             mWalkRouteOverlay.zoomToSpan();
-//                            mBottomLayout.setVisibility(View.VISIBLE);
-//                            int dis = (int) walkPath.getDistance();
-//                            int dur = (int) walkPath.getDuration();
-//                            String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
-//                            mRotueTimeDes.setText(des);
-//                            mRouteDetailDes.setVisibility(View.GONE);
-//                            mBottomLayout.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    Intent intent = new Intent(mContext,
-//                                            WalkRouteDetailActivity.class);
-//                                    intent.putExtra("walk_path", walkPath);
-//                                    intent.putExtra("walk_result",
-//                                            mWalkRouteResult);
-//                                    startActivity(intent);
-//                                }
-//                            });
+                            bottomLayout.setVisibility(View.VISIBLE);
+                            int dis = (int) walkPath.getDistance();
+                            int dur = (int) walkPath.getDuration();
+                            String des = AMapUtil.getFriendlyTime(dur) + "(" + AMapUtil.getFriendlyLength(dis) + ")";
+                            routeTimeDesView.setText(des);
+                            routeDetailDesView.setVisibility(View.GONE);
+                            bottomLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(MapRouteActivity.this, WalkRouteDetailActivity.class);
+                                    intent.putExtra("walk_path", walkPath);
+                                    intent.putExtra("walk_result",
+                                            mWalkRouteResult);
+                                    startActivity(intent);
+                                }
+                            });
                         } else if (walkRouteResult.getPaths() == null) {
                             showToast(R.string.no_result);
                         }
