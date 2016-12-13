@@ -88,6 +88,7 @@
         <activity android:name=".BaseMap.MapRouteActivity"></activity>
 
         <activity android:name=".Tools.Map.Route.WalkRouteDetailActivity"></activity>
+        <activity android:name=".Tools.Map.Route.BusRouteDetailActivity"></activity>
     </application>
 
 </manifest>

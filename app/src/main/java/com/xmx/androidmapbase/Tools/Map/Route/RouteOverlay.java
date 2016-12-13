@@ -15,24 +15,23 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.xmx.androidmapbase.R;
+import com.xmx.androidmapbase.Tools.Map.BaseOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RouteOverlay {
+public class RouteOverlay extends BaseOverlay {
 	protected List<Marker> stationMarkers = new ArrayList<Marker>();
 	protected List<Polyline> allPolyLines = new ArrayList<Polyline>();
 	protected Marker startMarker;
 	protected Marker endMarker;
 	protected LatLng startPoint;
 	protected LatLng endPoint;
-	protected AMap mAMap;
-	private Context mContext;
 	private Bitmap startBit, endBit, busBit, walkBit, driveBit;
 	protected boolean nodeIconVisible = true;
 
-	public RouteOverlay(Context context) {
-		mContext = context;
+	public RouteOverlay(AMap amap, Context context) {
+		super(amap, context);
 	}
 
 	/**

@@ -9,6 +9,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -41,6 +43,7 @@ import com.xmx.androidmapbase.Tools.Map.POI.POIConstants;
 import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
 import com.xmx.androidmapbase.Tools.Map.POI.POIOverlay;
 import com.xmx.androidmapbase.Tools.Map.POI.POISearchCallback;
+import com.xmx.androidmapbase.Tools.Map.Route.BusResultListAdapter;
 import com.xmx.androidmapbase.Tools.Map.Route.WalkRouteDetailActivity;
 import com.xmx.androidmapbase.Tools.Map.Route.WalkRouteOverlay;
 import com.xmx.androidmapbase.Tools.Map.Utils.AMapServicesUtil;
@@ -61,6 +64,7 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
     private RouteSearch mRouteSearch;
     private WalkRouteResult mWalkRouteResult;
     private WalkRouteOverlay mWalkRouteOverlay;
+    private BusRouteResult mBusRouteResult;
 
     private Marker subMarker;
     private LatLng subLatLng;
@@ -80,6 +84,12 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
     @ViewInject(R.id.secondline)
     private TextView routeDetailDesView;
 
+    @ViewInject(R.id.bus_result_list)
+    private ListView busResultList;
+
+    @ViewInject(R.id.bus_result)
+    private LinearLayout busResultLayout;
+
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
         focusLocation();
@@ -91,6 +101,11 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
         mWalkRouteOverlay.removeFromMap();
     }
 
+    @Event(R.id.btn_cancel_bus)
+    private void onCancelBusClick(View view) {
+        busResultLayout.setVisibility(View.GONE);
+    }
+
     @Event(R.id.btn_route)
     private void onRouteClick(View view) {
         if (mLocation == null) {
@@ -100,21 +115,54 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
         if (currentLatLng == null) {
             showToast("终点未设置");
         }
-        LatLonPoint start;
+        final LatLonPoint start;
         if (subLatLng != null) {
             start = AMapServicesUtil.convertToLatLonPoint(subLatLng);
         } else {
             start = AMapServicesUtil.convertToLatLonPoint(mLocation);
         }
-        LatLonPoint end = AMapServicesUtil.convertToLatLonPoint(currentLatLng);
+        final LatLonPoint end = AMapServicesUtil.convertToLatLonPoint(currentLatLng);
+
+        String routeType[] = {"步行路线", "公交路线"};
+        new AlertDialog.Builder(MapRouteActivity.this)
+                .setTitle("路线类型")
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setItems(routeType, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                searchWalkRoute(start, end);
+                                break;
+                            case 1:
+                                searchBusRoute(start, end);
+                                break;
+                        }
+                    }
+                })
+                .setNegativeButton("取消", null).show();
+
+    }
+
+    private void searchWalkRoute(LatLonPoint start, LatLonPoint end) {
         showToast("正在搜索");
         final RouteSearch.FromAndTo fromAndTo
-                = new RouteSearch.FromAndTo(start,
-                new LatLonPoint(currentLatLng.latitude, currentLatLng.longitude));
+                = new RouteSearch.FromAndTo(start, end);
 
         RouteSearch.WalkRouteQuery query
                 = new RouteSearch.WalkRouteQuery(fromAndTo, RouteSearch.WalkDefault);
         mRouteSearch.calculateWalkRouteAsyn(query);// 异步路径规划步行模式查询
+    }
+
+    private void searchBusRoute(LatLonPoint start, LatLonPoint end) {
+        showToast("正在搜索");
+        final RouteSearch.FromAndTo fromAndTo
+                = new RouteSearch.FromAndTo(start, end);
+
+        RouteSearch.BusRouteQuery query
+                = new RouteSearch.BusRouteQuery(fromAndTo, RouteSearch.BusDefault,
+                mCity, 0);// 第一个参数表示路径规划的起点和终点，第二个参数表示公交查询模式，第三个参数表示公交查询城市区号，第四个参数表示是否计算夜班车，0表示不计算
+        mRouteSearch.calculateBusRouteAsyn(query);// 异步路径规划公交模式查询
     }
 
     @Override
@@ -195,7 +243,27 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
         mRouteSearch.setRouteSearchListener(new RouteSearch.OnRouteSearchListener() {
             @Override
             public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
-
+                if (i == AMapException.CODE_AMAP_SUCCESS) {
+                    if (mWalkRouteOverlay != null) {
+                        mWalkRouteOverlay.removeFromMap();
+                    }
+                    bottomLayout.setVisibility(View.GONE);
+                    if (busRouteResult != null && busRouteResult.getPaths() != null) {
+                        if (busRouteResult.getPaths().size() > 0) {
+                            busResultLayout.setVisibility(View.VISIBLE);
+                            mBusRouteResult = busRouteResult;
+                            BusResultListAdapter mBusResultListAdapter
+                                    = new BusResultListAdapter(getBaseContext(), mBusRouteResult);
+                            busResultList.setAdapter(mBusResultListAdapter);
+                        } else if (busRouteResult.getPaths() == null) {
+                            showToast(R.string.no_result);
+                        }
+                    } else {
+                        showToast(R.string.no_result);
+                    }
+                } else {
+                    ToastUtil.showError(getBaseContext(), i);
+                }
             }
 
             @Override

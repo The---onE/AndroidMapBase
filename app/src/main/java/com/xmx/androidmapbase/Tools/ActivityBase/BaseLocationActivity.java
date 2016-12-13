@@ -12,6 +12,8 @@ import com.amap.api.maps.model.LatLng;
 public abstract class BaseLocationActivity extends BaseMapActivity implements LocationSource {
 
     protected LatLng mLocation; //当前位置
+    protected String mCity; //当前城市
+    protected String mCityCode; //当前城市
 
     protected boolean backgroundLocation = false; //是否后台继续定位
 
@@ -42,6 +44,8 @@ public abstract class BaseLocationActivity extends BaseMapActivity implements Lo
                     if (mListener != null && aMapLocation != null) {
                         if (aMapLocation.getErrorCode() == 0) {
                             mLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
+                            mCity = aMapLocation.getCity();
+                            mCityCode = aMapLocation.getCityCode();
                             whenLocationChanged(aMapLocation);
                         } else {
                             whenLocationError(aMapLocation.getErrorCode(), aMapLocation.getErrorInfo());

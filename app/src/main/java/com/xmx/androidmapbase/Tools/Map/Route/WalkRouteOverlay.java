@@ -36,8 +36,7 @@ public class WalkRouteOverlay extends RouteOverlay {
 	 */
 	public WalkRouteOverlay(Context context, AMap amap, WalkPath path,
 							LatLonPoint start, LatLonPoint end) {
-		super(context);
-		this.mAMap = amap;
+		super(amap, context);
 		this.walkPath = path;
 		startPoint = AMapServicesUtil.convertToLatLng(start);
 		endPoint = AMapServicesUtil.convertToLatLng(end);
