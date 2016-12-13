@@ -16,4 +16,10 @@
         android:layout_height="wrap_content"
         android:text="打开POI地图" />
 
+    <Button
+        android:id="@+id/btn_map_route"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="路线地图" />
+
 </LinearLayout>

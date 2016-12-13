@@ -103,13 +103,14 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                         if (poiOverlay != null) {
                             poiOverlay.removeAllFromMap();
                         }
+                        whetherToShowDetailInfo(false);
                         poiOverlay = new POIOverlay(mAMap, poiItems, getBaseContext());
                         poiOverlay.addAllToMap();
                         //poiOverlay.zoomToSpan();
                         if (currentLatLng != null) {
-                            focusLocation(currentLatLng);
+                            focusLocation(currentLatLng, 13.5f);
                         } else {
-                            focusLocation();
+                            focusLocation(13.5f);
                         }
                     }
 
@@ -135,8 +136,8 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
         mSearchText.setText("");
         if (poiOverlay != null) {
             poiOverlay.removeAllFromMap();
-            poiOverlay = null;
         }
+        whetherToShowDetailInfo(false);
     }
 
     @Event(R.id.btn_collect)
@@ -202,6 +203,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
         if (currentMarker != null) {
             currentMarker.remove();
             currentMarker = null;
+            currentLatLng = null;
         }
         cancelCollectButton.setVisibility(View.GONE);
         collectButton.setVisibility(View.GONE);
@@ -259,7 +261,13 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if (marker.getObject() != null) {
+                Object o = marker.getObject();
+                if (o != null) {
+                    if (collectMarkers.contains(marker)) {
+                        POI poi = (POI) o;
+                        showToast(poi.getTitle());
+                        return true;
+                    }
                     whetherToShowDetailInfo(true);
                     try {
                         POI mCurrentPoi = (POI) marker.getObject();
@@ -361,7 +369,10 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
                                 getResources(),
                                 R.drawable.point5)))
                 .anchor(0.5f, 0.5f);
-        collectMarkers.add(mAMap.addMarker(m));
+        Marker marker = mAMap.addMarker(m);
+        marker.setObject(poi);
+        collectMarkers.add(marker);
+
     }
 
     // 将之前被点击的marker置为原来的状态
@@ -382,7 +393,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
 
     private void setPoiItemDisplayContent(final POI mCurrentPoi) {
         mPoiName.setText(mCurrentPoi.getTitle());
-        mPoiAddress.setText(mCurrentPoi.getSnippet() + mCurrentPoi.getDistance());
+        mPoiAddress.setText(mCurrentPoi.getSnippet());
     }
 
     private void whetherToShowDetailInfo(boolean isToShow) {

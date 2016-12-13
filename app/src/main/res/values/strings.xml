@@ -88,6 +88,8 @@
     <string name="location">定位</string>
     <string name="collect">收藏</string>
 
+    <string name="route">路线</string>
+
     <string name="basic_map">显示地图</string>
     <string name="basic_description">介绍如何创建一个基本地图</string>
     <string name="basic_texturemapview">显示地图(TextureMapView)</string>

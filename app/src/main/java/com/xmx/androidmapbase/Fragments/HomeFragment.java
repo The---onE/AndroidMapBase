@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.xmx.androidmapbase.BaseMap.MapActivity;
 import com.xmx.androidmapbase.BaseMap.MapPOIActivity;
+import com.xmx.androidmapbase.BaseMap.MapRouteActivity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.FragmentBase.xUtilsFragment;
 
@@ -25,6 +26,11 @@ public class HomeFragment extends xUtilsFragment {
     @Event(value = R.id.btn_map_poi)
     private void onClickMapPOITest(View view) {
         startActivity(MapPOIActivity.class);
+    }
+
+    @Event(value = R.id.btn_map_route)
+    private void onClickMapRouteTest(View view) {
+        startActivity(MapRouteActivity.class);
     }
 
     @Override
