@@ -22,4 +22,15 @@
         android:layout_height="wrap_content"
         android:text="路线地图" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@android:color/darker_gray" />
+
+    <Button
+        android:id="@+id/btn_bmap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="百度地图" />
+
 </LinearLayout>

@@ -4,9 +4,10 @@ import android.app.Activity;
 
 import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVOSCloud;
+import com.baidu.mapapi.SDKInitializer;
 import com.xmx.androidmapbase.Tools.CrashHandler;
 import com.xmx.androidmapbase.Tools.Data.DataManager;
-import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
+import com.xmx.androidmapbase.Tools.Map.AMap.POI.POIManager;
 import com.xmx.androidmapbase.User.UserManager;
 
 import org.xutils.x;
@@ -53,6 +54,7 @@ public class Application extends android.app.Application {
         crashHandler.init(this);
 
         AVInstallation.getCurrentInstallation().saveInBackground();
+        SDKInitializer.initialize(this);
 
         UserManager.getInstance().setContext(this);
 

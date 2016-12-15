@@ -8,7 +8,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.maps.AMap;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationDirectionActivity;
+import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActivity;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;

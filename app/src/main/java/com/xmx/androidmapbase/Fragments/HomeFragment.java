@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.xmx.androidmapbase.BaseMap.BMapActivity;
 import com.xmx.androidmapbase.BaseMap.MapActivity;
 import com.xmx.androidmapbase.BaseMap.MapPOIActivity;
 import com.xmx.androidmapbase.BaseMap.MapRouteActivity;
@@ -31,6 +32,11 @@ public class HomeFragment extends xUtilsFragment {
     @Event(value = R.id.btn_map_route)
     private void onClickMapRouteTest(View view) {
         startActivity(MapRouteActivity.class);
+    }
+
+    @Event(value = R.id.btn_bmap)
+    private void onClickBMapTest(View view) {
+        startActivity(BMapActivity.class);
     }
 
     @Override

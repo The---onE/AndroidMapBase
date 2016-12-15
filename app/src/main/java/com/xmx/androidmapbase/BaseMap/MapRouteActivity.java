@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -23,7 +22,6 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
@@ -31,24 +29,18 @@ import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkPath;
 import com.amap.api.services.route.WalkRouteResult;
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.ActivityBase.BaseLocationDirectionActivity;
-import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
+import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
 import com.xmx.androidmapbase.Tools.Data.DataConstants;
-import com.xmx.androidmapbase.Tools.Map.POI.POI;
-import com.xmx.androidmapbase.Tools.Map.POI.POICloudManager;
-import com.xmx.androidmapbase.Tools.Map.POI.POIConstants;
-import com.xmx.androidmapbase.Tools.Map.POI.POIManager;
-import com.xmx.androidmapbase.Tools.Map.POI.POIOverlay;
-import com.xmx.androidmapbase.Tools.Map.POI.POISearchCallback;
-import com.xmx.androidmapbase.Tools.Map.Route.BusResultListAdapter;
-import com.xmx.androidmapbase.Tools.Map.Route.WalkRouteDetailActivity;
-import com.xmx.androidmapbase.Tools.Map.Route.WalkRouteOverlay;
-import com.xmx.androidmapbase.Tools.Map.Utils.AMapServicesUtil;
-import com.xmx.androidmapbase.Tools.Map.Utils.AMapUtil;
-import com.xmx.androidmapbase.Tools.Map.Utils.ToastUtil;
+import com.xmx.androidmapbase.Tools.Map.AMap.POI.POI;
+import com.xmx.androidmapbase.Tools.Map.AMap.POI.POICloudManager;
+import com.xmx.androidmapbase.Tools.Map.AMap.Route.BusResultListAdapter;
+import com.xmx.androidmapbase.Tools.Map.AMap.Route.WalkRouteDetailActivity;
+import com.xmx.androidmapbase.Tools.Map.AMap.Route.WalkRouteOverlay;
+import com.xmx.androidmapbase.Tools.Map.AMap.Utils.AMapServicesUtil;
+import com.xmx.androidmapbase.Tools.Map.AMap.Utils.AMapUtil;
+import com.xmx.androidmapbase.Tools.Map.AMap.Utils.ToastUtil;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -56,7 +48,6 @@ import org.xutils.view.annotation.ViewInject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @ContentView(R.layout.activity_map_route)
 public class MapRouteActivity extends BaseLocationDirectionActivity {

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.xmx.androidmapbase">
 
-    <!-- 基础模块（必须加入以下声明）START -->
+    <!-- LeanCloud权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -12,19 +12,24 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-    <!--地图包、搜索包需要的基础权限-->
-    <!--允许程序打开网络套接字-->
+    <!--高德地图权限-->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--允许程序设置内置sd卡的写权限-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!--允许程序获取网络状态-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--允许程序访问WiFi网络信息-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--允许程序读写手机状态和身份-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!--百度地图权限-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <!-- 基础模块 END -->
     <application
@@ -39,6 +44,10 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="4fd4aa40c7809a5a824bfe016e50e209" />
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="19ZDDxMbBCvnI1AHmIqGPuQIwipGHZ0n" />
 
         <!-- 实时通信模块、推送（若使用该功能，需添加以下声明）START -->
         <service android:name="com.avos.avoscloud.PushService" />
@@ -86,9 +95,10 @@
         <activity android:name=".BaseMap.MapActivity"></activity>
         <activity android:name=".BaseMap.MapPOIActivity"></activity>
         <activity android:name=".BaseMap.MapRouteActivity"></activity>
+        <activity android:name=".BaseMap.BMapActivity"></activity>
 
-        <activity android:name=".Tools.Map.Route.WalkRouteDetailActivity"></activity>
-        <activity android:name=".Tools.Map.Route.BusRouteDetailActivity"></activity>
+        <activity android:name=".Tools.Map.AMap.Route.WalkRouteDetailActivity"></activity>
+        <activity android:name=".Tools.Map.AMap.Route.BusRouteDetailActivity"></activity>
     </application>
 
 </manifest>
