@@ -229,23 +229,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                     resetLastMarker();
                 }
 
-                if (currentMarker != null) {
-                    currentMarker.remove();
-                    currentMarker = null;
-                }
-                MarkerOptions m = new MarkerOptions()
-                        .position(
-                                new LatLng(latLng.latitude, latLng.longitude))
-                        .icon(BitmapDescriptorFactory
-                                .fromBitmap(BitmapFactory.decodeResource(
-                                        getResources(),
-                                        R.drawable.point6)))
-                        .anchor(0.5f, 0.5f);
-                currentMarker = (Marker) mBMap.addOverlay(m);
-                currentLatLng = latLng;
-
-                collectButton.setVisibility(View.VISIBLE);
-                cancelCollectButton.setVisibility(View.VISIBLE);
+                setCurrentPosition(latLng);
             }
 
             @Override
@@ -257,23 +241,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                     resetLastMarker();
                 }
 
-                if (currentMarker != null) {
-                    currentMarker.remove();
-                    currentMarker = null;
-                }
-                MarkerOptions m = new MarkerOptions()
-                        .position(
-                                new LatLng(latLng.latitude, latLng.longitude))
-                        .icon(BitmapDescriptorFactory
-                                .fromBitmap(BitmapFactory.decodeResource(
-                                        getResources(),
-                                        R.drawable.point6)))
-                        .anchor(0.5f, 0.5f);
-                currentMarker = (Marker) mBMap.addOverlay(m);
-                currentLatLng = latLng;
-
-                collectButton.setVisibility(View.VISIBLE);
-                cancelCollectButton.setVisibility(View.VISIBLE);
+                setCurrentPosition(latLng);
                 return true;
             }
         });
@@ -281,6 +249,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
         mBMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                setCurrentPosition(marker.getPosition());
                 String title = marker.getTitle();
                 if (title != null && !title.equals("")) {
                     if (collectMarkers.contains(marker)) {
@@ -431,6 +400,26 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
         }
         lastMarker = null;
 
+    }
+
+    private void setCurrentPosition(LatLng latLng) {
+        if (currentMarker != null) {
+            currentMarker.remove();
+            currentMarker = null;
+        }
+        MarkerOptions m = new MarkerOptions()
+                .position(
+                        new LatLng(latLng.latitude, latLng.longitude))
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(BitmapFactory.decodeResource(
+                                getResources(),
+                                R.drawable.point6)))
+                .anchor(0.5f, 0.5f);
+        currentMarker = (Marker) mBMap.addOverlay(m);
+        currentLatLng = latLng;
+
+        collectButton.setVisibility(View.VISIBLE);
+        cancelCollectButton.setVisibility(View.VISIBLE);
     }
 
 //    private void setPoiItemDisplayContent(final POI mCurrentPoi) {

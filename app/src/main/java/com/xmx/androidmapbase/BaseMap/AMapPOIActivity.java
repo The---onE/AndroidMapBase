@@ -238,28 +238,13 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                     resetLastMarker();
                 }
 
-                if (currentMarker != null) {
-                    currentMarker.remove();
-                    currentMarker = null;
-                }
-                MarkerOptions m = new MarkerOptions()
-                        .position(
-                                new LatLng(latLng.latitude, latLng.longitude))
-                        .icon(BitmapDescriptorFactory
-                                .fromBitmap(BitmapFactory.decodeResource(
-                                        getResources(),
-                                        R.drawable.point6)))
-                        .anchor(0.5f, 0.5f);
-                currentMarker = mAMap.addMarker(m);
-                currentLatLng = latLng;
-
-                collectButton.setVisibility(View.VISIBLE);
-                cancelCollectButton.setVisibility(View.VISIBLE);
+                setCurrentPosition(latLng);
             }
         });
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                setCurrentPosition(marker.getPosition());
                 Object o = marker.getObject();
                 if (o != null) {
                     if (collectMarkers.contains(marker)) {
@@ -418,6 +403,26 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                     + cities.get(i).getAdCode() + "\n";
         }
         showToast(information);
+    }
+
+    private void setCurrentPosition(LatLng latLng) {
+        if (currentMarker != null) {
+            currentMarker.remove();
+            currentMarker = null;
+        }
+        MarkerOptions m = new MarkerOptions()
+                .position(
+                        new LatLng(latLng.latitude, latLng.longitude))
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(BitmapFactory.decodeResource(
+                                getResources(),
+                                R.drawable.point6)))
+                .anchor(0.5f, 0.5f);
+        currentMarker = mAMap.addMarker(m);
+        currentLatLng = latLng;
+
+        collectButton.setVisibility(View.VISIBLE);
+        cancelCollectButton.setVisibility(View.VISIBLE);
     }
 
     @Override
