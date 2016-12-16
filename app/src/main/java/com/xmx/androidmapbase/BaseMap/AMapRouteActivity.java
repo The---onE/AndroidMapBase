@@ -49,8 +49,8 @@ import org.xutils.view.annotation.ViewInject;
 import java.util.ArrayList;
 import java.util.List;
 
-@ContentView(R.layout.activity_map_route)
-public class MapRouteActivity extends BaseLocationDirectionActivity {
+@ContentView(R.layout.activity_amap_route)
+public class AMapRouteActivity extends BaseLocationDirectionActivity {
 
     private RouteSearch mRouteSearch;
     private WalkRouteResult mWalkRouteResult;
@@ -115,7 +115,7 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
         final LatLonPoint end = AMapServicesUtil.convertToLatLonPoint(currentLatLng);
 
         String routeType[] = {"步行路线", "公交路线"};
-        new AlertDialog.Builder(MapRouteActivity.this)
+        new AlertDialog.Builder(AMapRouteActivity.this)
                 .setTitle("路线类型")
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setItems(routeType, new DialogInterface.OnClickListener() {
@@ -288,7 +288,7 @@ public class MapRouteActivity extends BaseLocationDirectionActivity {
                             bottomLayout.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    Intent intent = new Intent(MapRouteActivity.this, WalkRouteDetailActivity.class);
+                                    Intent intent = new Intent(AMapRouteActivity.this, WalkRouteDetailActivity.class);
                                     intent.putExtra("walk_path", walkPath);
                                     intent.putExtra("walk_result",
                                             mWalkRouteResult);

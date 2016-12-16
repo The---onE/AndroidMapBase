@@ -5,19 +5,19 @@
     android:orientation="vertical"
     tools:context="com.xmx.androidmapbase.Fragments.HomeFragment">
     <Button
-        android:id="@+id/btn_map"
+        android:id="@+id/btn_amap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="打开地图" />
+        android:text="高德地图" />
 
     <Button
-        android:id="@+id/btn_map_poi"
+        android:id="@+id/btn_amap_poi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="打开POI地图" />
 
     <Button
-        android:id="@+id/btn_map_route"
+        android:id="@+id/btn_amap_route"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="路线地图" />
@@ -32,5 +32,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="百度地图" />
+
+    <Button
+        android:id="@+id/btn_bmap_poi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="打开POI地图" />
+
+    <Button
+        android:id="@+id/btn_bmap_route"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="路线地图" />
 
 </LinearLayout>

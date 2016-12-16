@@ -94,9 +94,9 @@
             android:name=".Log.OperationLogActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".BaseMap.MapActivity"></activity>
-        <activity android:name=".BaseMap.MapPOIActivity"></activity>
-        <activity android:name=".BaseMap.MapRouteActivity"></activity>
+        <activity android:name=".BaseMap.AMapActivity"></activity>
+        <activity android:name=".BaseMap.AMapPOIActivity"></activity>
+        <activity android:name=".BaseMap.AMapRouteActivity"></activity>
         <activity android:name=".BaseMap.BMapActivity"></activity>
 
         <activity android:name=".Tools.Map.AMap.Route.WalkRouteDetailActivity"></activity>

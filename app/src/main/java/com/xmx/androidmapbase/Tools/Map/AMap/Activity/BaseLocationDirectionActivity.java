@@ -18,7 +18,7 @@ import com.xmx.androidmapbase.Tools.Map.AMap.Utils.SensorEventHelper;
 
 import org.xutils.view.annotation.ContentView;
 
-@ContentView(R.layout.activity_map)
+@ContentView(R.layout.activity_amap)
 public abstract class BaseLocationDirectionActivity extends BaseLocationActivity {
 
     protected int strokeColor = Color.argb(180, 3, 145, 255); //精度边缘颜色

@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.xmx.androidmapbase.BaseMap.BMapActivity;
-import com.xmx.androidmapbase.BaseMap.MapActivity;
-import com.xmx.androidmapbase.BaseMap.MapPOIActivity;
-import com.xmx.androidmapbase.BaseMap.MapRouteActivity;
+import com.xmx.androidmapbase.BaseMap.AMapActivity;
+import com.xmx.androidmapbase.BaseMap.AMapPOIActivity;
+import com.xmx.androidmapbase.BaseMap.AMapRouteActivity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.FragmentBase.xUtilsFragment;
 
@@ -19,19 +19,19 @@ import org.xutils.view.annotation.Event;
  */
 @ContentView(R.layout.fragment_home)
 public class HomeFragment extends xUtilsFragment {
-    @Event(value = R.id.btn_map)
-    private void onClickMapTest(View view) {
-        startActivity(MapActivity.class);
+    @Event(value = R.id.btn_amap)
+    private void onClickAMapTest(View view) {
+        startActivity(AMapActivity.class);
     }
 
-    @Event(value = R.id.btn_map_poi)
-    private void onClickMapPOITest(View view) {
-        startActivity(MapPOIActivity.class);
+    @Event(value = R.id.btn_amap_poi)
+    private void onClickAMapPOITest(View view) {
+        startActivity(AMapPOIActivity.class);
     }
 
-    @Event(value = R.id.btn_map_route)
-    private void onClickMapRouteTest(View view) {
-        startActivity(MapRouteActivity.class);
+    @Event(value = R.id.btn_amap_route)
+    private void onClickAMapRouteTest(View view) {
+        startActivity(AMapRouteActivity.class);
     }
 
     @Event(value = R.id.btn_bmap)

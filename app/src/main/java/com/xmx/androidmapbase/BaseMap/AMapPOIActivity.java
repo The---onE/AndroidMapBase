@@ -43,8 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@ContentView(R.layout.activity_map_poi)
-public class MapPOIActivity extends BaseLocationDirectionActivity {
+@ContentView(R.layout.activity_amap_poi)
+public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
     private Marker lastMarker;
     private POIOverlay poiOverlay;// poi图层
@@ -147,7 +147,7 @@ public class MapPOIActivity extends BaseLocationDirectionActivity {
         final EditText edit = new EditText(this);
         edit.setTextColor(Color.BLACK);
         edit.setTextSize(24);
-        new AlertDialog.Builder(MapPOIActivity.this)
+        new AlertDialog.Builder(AMapPOIActivity.this)
                 .setTitle("添加收藏")
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setView(edit)

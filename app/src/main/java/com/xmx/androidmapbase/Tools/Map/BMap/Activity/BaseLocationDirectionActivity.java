@@ -12,14 +12,13 @@ import com.baidu.mapapi.map.Circle;
 import com.baidu.mapapi.map.CircleOptions;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.Map.BMap.Utils.SensorEventHelper;
 
 import org.xutils.view.annotation.ContentView;
 
-@ContentView(R.layout.activity_map)
+@ContentView(R.layout.activity_amap)
 public abstract class BaseLocationDirectionActivity extends BaseLocationActivity {
 
     //protected int strokeColor = Color.argb(180, 3, 145, 255); //精度边缘颜色

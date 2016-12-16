@@ -13,8 +13,8 @@ import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActiv
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 
-@ContentView(R.layout.activity_map)
-public class MapActivity extends BaseLocationDirectionActivity {
+@ContentView(R.layout.activity_amap)
+public class AMapActivity extends BaseLocationDirectionActivity {
 
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
