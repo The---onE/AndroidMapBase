@@ -7,16 +7,14 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationActivity;
+import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationDirectionActivity;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
 @ContentView(R.layout.activity_bmap)
-public class BMapActivity extends BaseLocationActivity {
-
-    private boolean locationFlag = false;
+public class BMapActivity extends BaseLocationDirectionActivity {
 
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
@@ -39,18 +37,20 @@ public class BMapActivity extends BaseLocationActivity {
     }
 
     @Override
+    protected void whenFirstLocation(BDLocation bdLocation) {
+        focusLocation();
+    }
+
+    @Override
+    protected void whenNewLocation(BDLocation bdLocation) {
+
+    }
+
+    @Override
     protected void processLogic(Bundle savedInstanceState) {
         super.processLogic(savedInstanceState);
         mBMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         //mBMap.setTrafficEnabled(true);
-    }
-
-    @Override
-    protected void whenLocationChanged(BDLocation location) {
-        if (!locationFlag) {
-            focusLocation();
-            locationFlag = true;
-        }
     }
 
     @Override
