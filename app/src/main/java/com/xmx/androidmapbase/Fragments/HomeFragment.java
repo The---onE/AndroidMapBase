@@ -8,6 +8,7 @@ import com.xmx.androidmapbase.BaseMap.BMapActivity;
 import com.xmx.androidmapbase.BaseMap.AMapActivity;
 import com.xmx.androidmapbase.BaseMap.AMapPOIActivity;
 import com.xmx.androidmapbase.BaseMap.AMapRouteActivity;
+import com.xmx.androidmapbase.BaseMap.BMapPOIActivity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.FragmentBase.xUtilsFragment;
 
@@ -38,6 +39,12 @@ public class HomeFragment extends xUtilsFragment {
     private void onClickBMapTest(View view) {
         startActivity(BMapActivity.class);
     }
+
+    @Event(value = R.id.btn_bmap_poi)
+    private void onClickBMapPOITest(View view) {
+        startActivity(BMapPOIActivity.class);
+    }
+
 
     @Override
     protected void processLogic(Bundle savedInstanceState) {

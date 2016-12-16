@@ -50,8 +50,10 @@ public class Application extends android.app.Application {
 
         AVOSCloud.initialize(this, Constants.APP_ID, Constants.APP_KEY);
 
-        CrashHandler crashHandler = CrashHandler.getInstance();
-        crashHandler.init(this);
+        if (Constants.EXCEPTION_DEBUG) {
+            CrashHandler crashHandler = CrashHandler.getInstance();
+            crashHandler.init(this);
+        }
 
         AVInstallation.getCurrentInstallation().saveInBackground();
         SDKInitializer.initialize(this);

@@ -98,6 +98,7 @@
         <activity android:name=".BaseMap.AMapPOIActivity"></activity>
         <activity android:name=".BaseMap.AMapRouteActivity"></activity>
         <activity android:name=".BaseMap.BMapActivity"></activity>
+        <activity android:name=".BaseMap.BMapPOIActivity"></activity>
 
         <activity android:name=".Tools.Map.AMap.Route.WalkRouteDetailActivity"></activity>
         <activity android:name=".Tools.Map.AMap.Route.BusRouteDetailActivity"></activity>

@@ -4,7 +4,7 @@ package com.xmx.androidmapbase;
  * Created by The_onE on 2016/2/24.
  */
 public class Constants {
-    public static final boolean EXCEPTION_DEBUG = true;
+    public static final boolean EXCEPTION_DEBUG = false;
 
     public static final String APP_ID = "wJMjIRbGcFS3FAxl2TutNTNE-gzGzoHsz  ";
     public static final String APP_KEY = "cX2KTzLuyKPvss5xQxv6xsWO";

@@ -11,29 +11,28 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.core.SuggestionCity;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapPoi;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.CityInfo;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
 import com.xmx.androidmapbase.Tools.Data.DataConstants;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POI;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POICloudManager;
-import com.xmx.androidmapbase.Tools.Map.AMap.Utils.ToastUtil;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POIConstants;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POIManager;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POIOverlay;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POISearchCallback;
+import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationDirectionActivity;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POI;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POICloudManager;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIConstants;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIManager;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIOverlay;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POISearchCallback;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -43,8 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@ContentView(R.layout.activity_amap_poi)
-public class AMapPOIActivity extends BaseLocationDirectionActivity {
+@ContentView(R.layout.activity_bmap_poi)
+public class BMapPOIActivity extends BaseLocationDirectionActivity {
 
     private Marker lastMarker;
     private POIOverlay poiOverlay;// poi图层
@@ -86,9 +85,9 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
         if (currentLatLng != null) {
             position = currentLatLng;
         }
+
         POIManager.getInstance().searchPOIQuery(position, 0,
-                0, 0,
-                keyword, "", "",
+                0, 0, keyword,
                 new POISearchCallback() {
                     @Override
                     public void success(List<POI> poiItems) {
@@ -103,29 +102,24 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                             poiOverlay.removeAllFromMap();
                         }
                         whetherToShowDetailInfo(false);
-                        poiOverlay = new POIOverlay(mAMap, poiItems, getBaseContext());
+                        poiOverlay = new POIOverlay(mBMap, poiItems, getBaseContext());
                         poiOverlay.addAllToMap();
                         //poiOverlay.zoomToSpan();
                         if (currentLatLng != null) {
-                            focusLocation(currentLatLng, 13.5f);
+                            focusLocation(currentLatLng, 16);
                         } else {
-                            focusLocation(13.5f);
+                            focusLocation(16);
                         }
                     }
 
                     @Override
-                    public void suggest(List<SuggestionCity> cities) {
+                    public void suggest(List<CityInfo> cities) {
                         showSuggestCity(cities);
                     }
 
                     @Override
                     public void noData() {
                         showToast(R.string.no_result);
-                    }
-
-                    @Override
-                    public void error(int code) {
-                        ToastUtil.showError(getBaseContext(), code);
                     }
                 });
     }
@@ -147,7 +141,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
         final EditText edit = new EditText(this);
         edit.setTextColor(Color.BLACK);
         edit.setTextSize(24);
-        new AlertDialog.Builder(AMapPOIActivity.this)
+        new AlertDialog.Builder(BMapPOIActivity.this)
                 .setTitle("添加收藏")
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setView(edit)
@@ -156,7 +150,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String title = edit.getText().toString();
                         final POI poi = new POI(UUID.randomUUID().toString(),
-                                new LatLonPoint(currentLatLng.latitude, currentLatLng.longitude),
+                                new LatLng(currentLatLng.latitude, currentLatLng.longitude),
                                 title, "");
 //                        POISQLManager.getInstance().insertData(poi);
 //                        addCollectMarker(poi);
@@ -215,22 +209,19 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
     @Override
     protected void getMapView() {
-        mMapView = getViewById(R.id.map);
+        mMapView = getViewById(R.id.bmapView);
     }
 
     @Override
     protected void initView(Bundle savedInstanceState) {
         super.initView(savedInstanceState);
 
-        strokeColor = Color.argb(180, 3, 145, 255);
-        fillColor = Color.argb(64, 128, 192, 192);
-        markerFlag = "myLocation";
         //aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
     }
 
     @Override
     protected void setListener() {
-        mAMap.setOnMapClickListener(new AMap.OnMapClickListener() {
+        mBMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 whetherToShowDetailInfo(false);
@@ -250,26 +241,54 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                                         getResources(),
                                         R.drawable.point6)))
                         .anchor(0.5f, 0.5f);
-                currentMarker = mAMap.addMarker(m);
+                currentMarker = (Marker) mBMap.addOverlay(m);
                 currentLatLng = latLng;
 
                 collectButton.setVisibility(View.VISIBLE);
                 cancelCollectButton.setVisibility(View.VISIBLE);
             }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+                showToast(mapPoi.getName());
+                LatLng latLng = mapPoi.getPosition();
+                whetherToShowDetailInfo(false);
+                if (lastMarker != null) {
+                    resetLastMarker();
+                }
+
+                if (currentMarker != null) {
+                    currentMarker.remove();
+                    currentMarker = null;
+                }
+                MarkerOptions m = new MarkerOptions()
+                        .position(
+                                new LatLng(latLng.latitude, latLng.longitude))
+                        .icon(BitmapDescriptorFactory
+                                .fromBitmap(BitmapFactory.decodeResource(
+                                        getResources(),
+                                        R.drawable.point6)))
+                        .anchor(0.5f, 0.5f);
+                currentMarker = (Marker) mBMap.addOverlay(m);
+                currentLatLng = latLng;
+
+                collectButton.setVisibility(View.VISIBLE);
+                cancelCollectButton.setVisibility(View.VISIBLE);
+                return true;
+            }
         });
-        mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+
+        mBMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Object o = marker.getObject();
-                if (o != null) {
+                String title = marker.getTitle();
+                if (title != null && !title.equals("")) {
                     if (collectMarkers.contains(marker)) {
-                        POI poi = (POI) o;
-                        showToast(poi.getTitle());
+                        showToast(marker.getTitle());
                         return true;
                     }
                     whetherToShowDetailInfo(true);
                     try {
-                        POI mCurrentPoi = (POI) marker.getObject();
                         if (lastMarker == null) {
                             lastMarker = marker;
                         } else {
@@ -283,7 +302,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                                         getResources(),
                                         R.drawable.poi_marker_pressed)));
 
-                        setPoiItemDisplayContent(mCurrentPoi);
+                        setPoiItemDisplayContent(marker.getTitle());
                     } catch (Exception e) {
                         filterException(e);
                     }
@@ -293,35 +312,57 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                         resetLastMarker();
                     }
                 }
-                return true;
+                return false;
             }
         });
-//        mAMap.setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//
-//            }
-//        });
-//
-//        mAMap.setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
-//            @Override
-//            public View getInfoWindow(Marker marker) {
-//                return null;
-//            }
-//
-//            @Override
-//            public View getInfoContents(Marker marker) {
-//                return null;
-//            }
-//        });
+    }
+
+    @Override
+    protected void whenFirstLocation(BDLocation bdLocation) {
+        focusLocation();
+    }
+
+    @Override
+    protected void whenNewLocation(BDLocation bdLocation) {
+
+    }
+
+    @Override
+    protected void whenLocationError(int errorCode) {
+        showToast("定位失败:" + errorCode);
+        switch (errorCode) {
+            case BDLocation.TypeServerError:
+                showToast("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
+                break;
+            case BDLocation.TypeNetWorkException:
+                showToast("网络不同导致定位失败，请检查网络是否通畅");
+                break;
+            case BDLocation.TypeCriteriaException:
+                showToast("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
+                break;
+        }
+    }
+
+    @Override
+    protected void setLocationOption(LocationClientOption option) {
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
+        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
+        int span = 1000;
+        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
+        option.setOpenGps(true);//可选，默认false,设置是否使用gps
+        option.setLocationNotify(true);//可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
+        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
+        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤GPS仿真结果，默认需要
     }
 
     @Override
     protected void processLogic(Bundle savedInstanceState) {
         super.processLogic(savedInstanceState);
-
-        mAMap.getUiSettings().setMyLocationButtonEnabled(false);//设置默认定位按钮是否显示
-        mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
 
 //        List<POI> poiList = POISQLManager.getInstance().selectAll();
 //        for (POI poi : poiList) {
@@ -363,15 +404,15 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
     private void addCollectMarker(POI poi) {
         MarkerOptions m = new MarkerOptions()
-                .position(new LatLng(poi.getLatLonPoint().getLatitude(),
-                        poi.getLatLonPoint().getLongitude()))
+                .position(new LatLng(poi.location.latitude,
+                        poi.location.longitude))
                 .icon(BitmapDescriptorFactory
                         .fromBitmap(BitmapFactory.decodeResource(
                                 getResources(),
                                 R.drawable.point5)))
-                .anchor(0.5f, 0.5f);
-        Marker marker = mAMap.addMarker(m);
-        marker.setObject(poi);
+                .anchor(0.5f, 0.5f)
+                .title(poi.name);
+        Marker marker = (Marker) mBMap.addOverlay(m);
         collectMarkers.add(marker);
 
     }
@@ -392,9 +433,13 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
     }
 
-    private void setPoiItemDisplayContent(final POI mCurrentPoi) {
-        mPoiName.setText(mCurrentPoi.getTitle());
-        mPoiAddress.setText(mCurrentPoi.getSnippet());
+//    private void setPoiItemDisplayContent(final POI mCurrentPoi) {
+//        mPoiName.setText(mCurrentPoi.name);
+//        mPoiAddress.setText(mCurrentPoi.address);
+//    }
+
+    private void setPoiItemDisplayContent(String title) {
+        mPoiName.setText(title);
     }
 
     private void whetherToShowDetailInfo(boolean isToShow) {
@@ -410,37 +455,12 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
     /**
      * poi没有搜索到数据，返回一些推荐城市的信息
      */
-    private void showSuggestCity(List<SuggestionCity> cities) {
+    private void showSuggestCity(List<CityInfo> cities) {
         String information = "推荐城市\n";
-        for (int i = 0; i < cities.size(); i++) {
-            information += "城市名称:" + cities.get(i).getCityName() + "城市区号:"
-                    + cities.get(i).getCityCode() + "城市编码:"
-                    + cities.get(i).getAdCode() + "\n";
+        for (CityInfo city : cities) {
+            information += "城市名称:" + city.city + "城市区号:" + "\n";
         }
         showToast(information);
-    }
-
-    @Override
-    protected void setLocationOption(AMapLocationClientOption locationOption) {
-        //设置为高精度定位模式
-        locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-    }
-
-    @Override
-    protected void whenFirstLocation(AMapLocation aMapLocation) {
-        focusLocation();
-    }
-
-    @Override
-    protected void whenNewLocation(AMapLocation aMapLocation) {
-        //mListener.onLocationChanged(aMapLocation); //系统默认定位事件
-    }
-
-    @Override
-    protected void whenLocationError(int errorCode, String errorInfo) {
-        String errText = "定位失败," + errorCode + ": " + errorInfo;
-        showToast(errText);
-        showLog("AMapErr", errText);
     }
 
     @Override
