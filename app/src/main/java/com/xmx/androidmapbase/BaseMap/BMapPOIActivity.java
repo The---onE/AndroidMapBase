@@ -23,6 +23,7 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.CityInfo;
 import com.xmx.androidmapbase.R;
+import com.xmx.androidmapbase.Tools.Data.Callback.DelCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
 import com.xmx.androidmapbase.Tools.Data.DataConstants;
@@ -51,6 +52,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
     private Marker currentMarker;
     private LatLng currentLatLng;
     private List<Marker> collectMarkers = new ArrayList<>();
+    private Marker currentCollect;
 
     @ViewInject(R.id.poi_name)
     private TextView mPoiName;
@@ -138,57 +140,111 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
         if (currentMarker == null || currentLatLng == null) {
             return;
         }
-        final EditText edit = new EditText(this);
-        edit.setTextColor(Color.BLACK);
-        edit.setTextSize(24);
-        new AlertDialog.Builder(BMapPOIActivity.this)
-                .setTitle("添加收藏")
-                .setIcon(android.R.drawable.ic_dialog_info)
-                .setView(edit)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String title = edit.getText().toString();
-                        final POI poi = new POI(UUID.randomUUID().toString(),
-                                new LatLng(currentLatLng.latitude, currentLatLng.longitude),
-                                title, "");
+        if (currentCollect != null) {
+            AlertDialog.Builder builder = new AlertDialog
+                    .Builder(BMapPOIActivity.this);
+            builder.setMessage("要删除该收藏吗？");
+            builder.setTitle("提示");
+            builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    String id = currentCollect.getExtraInfo().getString("id");
+                    POICloudManager.getInstance().deleteFromCloud(id,
+                            new DelCallback() {
+                                @Override
+                                public void success(AVObject user) {
+                                    showToast("删除成功");
+                                    currentCollect.remove();
+                                    currentCollect = null;
+                                }
+
+                                @Override
+                                public void syncError(int error) {
+                                    switch (error) {
+                                        case DataConstants.NOT_INIT:
+                                            showToast(R.string.failure);
+                                            break;
+                                        case DataConstants.NOT_LOGGED_IN:
+                                            showToast(R.string.not_loggedin);
+                                            break;
+                                        case DataConstants.USERNAME_ERROR:
+                                            showToast(R.string.username_error);
+                                            break;
+                                        case DataConstants.CHECKSUM_ERROR:
+                                            showToast(R.string.not_loggedin);
+                                            break;
+                                    }
+                                }
+
+                                @Override
+                                public void syncError(AVException e) {
+                                    showToast(R.string.delete_failure);
+                                    filterException(e);
+                                }
+                            });
+                }
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.show();
+        } else {
+            final EditText edit = new EditText(this);
+            edit.setTextColor(Color.BLACK);
+            edit.setTextSize(24);
+            new AlertDialog.Builder(BMapPOIActivity.this)
+                    .setTitle("添加收藏")
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .setView(edit)
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            String title = edit.getText().toString();
+                            final POI poi = new POI(UUID.randomUUID().toString(),
+                                    new LatLng(currentLatLng.latitude, currentLatLng.longitude),
+                                    title, "");
 //                        POISQLManager.getInstance().insertData(poi);
 //                        addCollectMarker(poi);
 //                        showToast("收藏成功");
-                        POICloudManager.getInstance().insertToCloud(poi, new InsertCallback() {
-                            @Override
-                            public void success(AVObject user, String objectId) {
-                                addCollectMarker(poi);
-                                showToast("收藏成功");
-                            }
-
-                            @Override
-                            public void syncError(int error) {
-                                switch (error) {
-                                    case DataConstants.NOT_INIT:
-                                        showToast(R.string.failure);
-                                        break;
-                                    case DataConstants.NOT_LOGGED_IN:
-                                        showToast(R.string.not_loggedin);
-                                        break;
-                                    case DataConstants.USERNAME_ERROR:
-                                        showToast(R.string.username_error);
-                                        break;
-                                    case DataConstants.CHECKSUM_ERROR:
-                                        showToast(R.string.not_loggedin);
-                                        break;
+                            POICloudManager.getInstance().insertToCloud(poi, new InsertCallback() {
+                                @Override
+                                public void success(AVObject user, String objectId) {
+                                    poi.mCloudId = objectId;
+                                    addCollectMarker(poi);
+                                    showToast("收藏成功");
                                 }
-                            }
 
-                            @Override
-                            public void syncError(AVException e) {
-                                showToast(R.string.sync_failure);
-                                filterException(e);
-                            }
-                        });
-                    }
-                })
-                .setNegativeButton("取消", null).show();
+                                @Override
+                                public void syncError(int error) {
+                                    switch (error) {
+                                        case DataConstants.NOT_INIT:
+                                            showToast(R.string.failure);
+                                            break;
+                                        case DataConstants.NOT_LOGGED_IN:
+                                            showToast(R.string.not_loggedin);
+                                            break;
+                                        case DataConstants.USERNAME_ERROR:
+                                            showToast(R.string.username_error);
+                                            break;
+                                        case DataConstants.CHECKSUM_ERROR:
+                                            showToast(R.string.not_loggedin);
+                                            break;
+                                    }
+                                }
+
+                                @Override
+                                public void syncError(AVException e) {
+                                    showToast(R.string.sync_failure);
+                                    filterException(e);
+                                }
+                            });
+                        }
+                    })
+                    .setNegativeButton("取消", null).show();
+        }
     }
 
     @Event(R.id.btn_collect_cancel)
@@ -254,6 +310,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 if (title != null && !title.equals("")) {
                     if (collectMarkers.contains(marker)) {
                         showToast(marker.getTitle());
+                        currentCollect = marker;
                         return true;
                     }
                     whetherToShowDetailInfo(true);
@@ -382,6 +439,11 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 .anchor(0.5f, 0.5f)
                 .title(poi.name);
         Marker marker = (Marker) mBMap.addOverlay(m);
+
+        Bundle info = new Bundle();
+        info.putString("id", poi.mCloudId);
+        marker.setExtraInfo(info);
+
         collectMarkers.add(marker);
 
     }
@@ -417,6 +479,8 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 .anchor(0.5f, 0.5f);
         currentMarker = (Marker) mBMap.addOverlay(m);
         currentLatLng = latLng;
+
+        currentCollect = null;
 
         collectButton.setVisibility(View.VISIBLE);
         cancelCollectButton.setVisibility(View.VISIBLE);
