@@ -22,6 +22,13 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.CityInfo;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.geocode.GeoCodeOption;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.Data.Callback.DelCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
@@ -93,25 +100,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 new POISearchCallback() {
                     @Override
                     public void success(List<POI> poiItems) {
-                        //清除POI信息显示
-                        whetherToShowDetailInfo(false);
-                        //并还原点击marker样式
-                        if (lastMarker != null) {
-                            resetLastMarker();
-                        }
-                        //清理之前搜索结果的marker
-                        if (poiOverlay != null) {
-                            poiOverlay.removeAllFromMap();
-                        }
-                        whetherToShowDetailInfo(false);
-                        poiOverlay = new POIOverlay(mBMap, poiItems, getBaseContext());
-                        poiOverlay.addAllToMap();
-                        //poiOverlay.zoomToSpan();
-                        if (currentLatLng != null) {
-                            focusLocation(currentLatLng, 14);
-                        } else {
-                            focusLocation(14);
-                        }
+                        showPOI(poiItems);
                     }
 
                     @Override
@@ -124,6 +113,67 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                         showToast(R.string.no_result);
                     }
                 });
+    }
+
+    @Event(value = R.id.btn_search, type = View.OnLongClickListener.class)
+    private boolean onSearchLongClick(View view) {
+        String keyword = mSearchText.getText().toString().trim();
+        String[] info = keyword.split(" ");
+        final GeoCoder mGeoCoder = GeoCoder.newInstance();
+
+        // 设置查询结果监听者
+        mGeoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
+            @Override
+            public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
+                LatLng location = geoCodeResult.getLocation();
+                if (location != null) {
+                    whetherToShowDetailInfo(false);
+                    if (lastMarker != null) {
+                        resetLastMarker();
+                    }
+                    setCurrentPosition(location);
+                    focusLocation(location);
+                } else {
+                    showToast(R.string.no_result);
+                }
+                mGeoCoder.destroy();
+            }
+
+            @Override
+            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
+                String address = reverseGeoCodeResult.getAddress();
+                String circle = reverseGeoCodeResult.getBusinessCircle();
+                showToast("地址:" + address + "\n商圈:" + circle);
+                List<PoiInfo> list = reverseGeoCodeResult.getPoiList();
+                if (list != null) {
+                    List<POI> poiList = new ArrayList<>();
+                    for (PoiInfo poiItem : list) {
+                        poiList.add(new POI(poiItem));
+                    }
+                    showPOI(poiList);
+                }
+                mGeoCoder.destroy();
+            }
+        });
+
+        if (keyword.equals("") || info.length < 2) {
+            LatLng position = mLocation;
+            if (currentLatLng != null) {
+                position = currentLatLng;
+            }
+            // 反地理编码请求参数对象
+            ReverseGeoCodeOption mReverseGeoCodeOption = new ReverseGeoCodeOption();
+            // 设置请求参数
+            mReverseGeoCodeOption.location(position);
+            // 发起反地理编码请求(经纬度->地址信息)
+            mGeoCoder.reverseGeoCode(mReverseGeoCodeOption);
+        } else {
+            GeoCodeOption mGeoCodeOption = new GeoCodeOption();
+            mGeoCodeOption.city(info[0]);
+            mGeoCodeOption.address(info[1]);
+            mGeoCoder.geocode(mGeoCodeOption);
+        }
+        return true;
     }
 
     @Event(R.id.btn_cancel)
@@ -449,6 +499,28 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
 
         collectMarkers.add(marker);
 
+    }
+
+    private void showPOI(List<POI> poiItems) {
+        //清除POI信息显示
+        whetherToShowDetailInfo(false);
+        //并还原点击marker样式
+        if (lastMarker != null) {
+            resetLastMarker();
+        }
+        //清理之前搜索结果的marker
+        if (poiOverlay != null) {
+            poiOverlay.removeAllFromMap();
+        }
+        whetherToShowDetailInfo(false);
+        poiOverlay = new POIOverlay(mBMap, poiItems, getBaseContext());
+        poiOverlay.addAllToMap();
+        //poiOverlay.zoomToSpan();
+        if (currentLatLng != null) {
+            focusLocation(currentLatLng, 14);
+        } else {
+            focusLocation(14);
+        }
     }
 
     // 将之前被点击的marker置为原来的状态

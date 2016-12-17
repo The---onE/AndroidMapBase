@@ -19,7 +19,14 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
+import com.amap.api.services.geocoder.GeocodeAddress;
+import com.amap.api.services.geocoder.GeocodeQuery;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.xmx.androidmapbase.R;
@@ -30,6 +37,8 @@ import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
 import com.xmx.androidmapbase.Tools.Data.DataConstants;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POI;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POICloudManager;
+import com.xmx.androidmapbase.Tools.Map.AMap.Utils.AMapServicesUtil;
+import com.xmx.androidmapbase.Tools.Map.AMap.Utils.AMapUtil;
 import com.xmx.androidmapbase.Tools.Map.AMap.Utils.ToastUtil;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POIConstants;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POIManager;
@@ -94,25 +103,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                 new POISearchCallback() {
                     @Override
                     public void success(List<POI> poiItems) {
-                        //清除POI信息显示
-                        whetherToShowDetailInfo(false);
-                        //并还原点击marker样式
-                        if (lastMarker != null) {
-                            resetLastMarker();
-                        }
-                        //清理之前搜索结果的marker
-                        if (poiOverlay != null) {
-                            poiOverlay.removeAllFromMap();
-                        }
-                        whetherToShowDetailInfo(false);
-                        poiOverlay = new POIOverlay(mAMap, poiItems, getBaseContext());
-                        poiOverlay.addAllToMap();
-                        //poiOverlay.zoomToSpan();
-                        if (currentLatLng != null) {
-                            focusLocation(currentLatLng, 13.5f);
-                        } else {
-                            focusLocation(13.5f);
-                        }
+                        showPOI(poiItems);
                     }
 
                     @Override
@@ -130,6 +121,76 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                         ToastUtil.showError(getBaseContext(), code);
                     }
                 });
+    }
+
+    @Event(value = R.id.btn_search, type = View.OnLongClickListener.class)
+    private boolean onSearchLongClick(View view) {
+        String keyword = mSearchText.getText().toString().trim();
+        String[] info = keyword.split(" ");
+        GeocodeSearch geocodeSearch = new GeocodeSearch(this);
+
+        geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
+            @Override
+            public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
+                if (i == 1000) {
+                    if (regeocodeResult != null && regeocodeResult.getRegeocodeAddress() != null
+                            && regeocodeResult.getRegeocodeAddress().getFormatAddress() != null) {
+                        String address = regeocodeResult.getRegeocodeAddress().getFormatAddress();
+                        showToast("地址:" + address);
+                        List<PoiItem> list = regeocodeResult.getRegeocodeAddress().getPois();
+                        if (list != null) {
+                            List<POI> poiList = new ArrayList<>();
+                            for (PoiItem poiItem : list) {
+                                poiList.add(new POI(poiItem));
+                            }
+                            showPOI(poiList);
+                        }
+                    } else {
+                        showToast(R.string.no_result);
+                    }
+                } else {
+                    ToastUtil.showError(getBaseContext(), i);
+                }
+            }
+
+            @Override
+            public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+                if (i == 1000) {
+                    if (geocodeResult != null && geocodeResult.getGeocodeAddressList() != null
+                            && geocodeResult.getGeocodeAddressList().size() > 0) {
+                        GeocodeAddress address = geocodeResult.getGeocodeAddressList().get(0);
+                        LatLonPoint position = address.getLatLonPoint();
+                        LatLng latLng = AMapUtil.convertToLatLng(position);
+
+                        whetherToShowDetailInfo(false);
+                        if (lastMarker != null) {
+                            resetLastMarker();
+                        }
+                        setCurrentPosition(latLng);
+                        focusLocation(latLng);
+                    } else {
+                        showToast(R.string.no_result);
+                    }
+                } else {
+                    ToastUtil.showError(getBaseContext(), i);
+                }
+            }
+        });
+        if (keyword.equals("") || info.length < 2) {
+            LatLng position = mLocation;
+            if (currentLatLng != null) {
+                position = currentLatLng;
+            }
+
+            LatLonPoint point = AMapServicesUtil.convertToLatLonPoint(position);
+            RegeocodeQuery query = new RegeocodeQuery(point, 200, GeocodeSearch.AMAP);
+            geocodeSearch.getFromLocationAsyn(query);
+        } else {
+            GeocodeQuery query = new GeocodeQuery(info[1], info[0]);
+            geocodeSearch.getFromLocationNameAsyn(query);
+        }
+
+        return true;
     }
 
     @Event(R.id.btn_cancel)
@@ -402,6 +463,28 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                 filterException(e);
             }
         });
+    }
+
+    private void showPOI(List<POI> poiItems) {
+        //清除POI信息显示
+        whetherToShowDetailInfo(false);
+        //并还原点击marker样式
+        if (lastMarker != null) {
+            resetLastMarker();
+        }
+        //清理之前搜索结果的marker
+        if (poiOverlay != null) {
+            poiOverlay.removeAllFromMap();
+        }
+        whetherToShowDetailInfo(false);
+        poiOverlay = new POIOverlay(mAMap, poiItems, getBaseContext());
+        poiOverlay.addAllToMap();
+        //poiOverlay.zoomToSpan();
+        if (currentLatLng != null) {
+            focusLocation(currentLatLng, 13.5f);
+        } else {
+            focusLocation(13.5f);
+        }
     }
 
     private void addCollectMarker(POI poi) {

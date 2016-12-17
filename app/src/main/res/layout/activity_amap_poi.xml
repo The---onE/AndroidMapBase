@@ -14,8 +14,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar_layout"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/search_bar_layout"
         android:orientation="vertical">
 
         <Button
@@ -69,13 +69,6 @@
             android:textColor="@color/white"
             android:textSize="12dp" />
 
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/btn_search"
-            android:text="@string/cancel" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -85,7 +78,6 @@
             android:background="@drawable/search_input_half"
             android:clickable="true"
             android:gravity="center_vertical">
-
 
             <EditText
                 android:id="@+id/input_edittext"
@@ -99,6 +91,13 @@
                 android:textColorHint="@color/darkgrey"
                 android:textSize="14sp" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/btn_search"
+            android:text="@string/cancel" />
     </RelativeLayout>
 
     <RelativeLayout
