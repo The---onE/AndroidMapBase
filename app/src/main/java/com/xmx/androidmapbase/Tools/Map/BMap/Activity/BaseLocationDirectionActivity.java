@@ -23,7 +23,7 @@ public abstract class BaseLocationDirectionActivity extends BaseLocationActivity
 
     //protected int strokeColor = Color.argb(180, 3, 145, 255); //精度边缘颜色
     protected int fillColor = Color.argb(64, 128, 192, 192); //精度填充颜色
-    protected String markerFlag = "myLocation";
+    protected final static String LOCATION_TITLE = "myLocation";
 
     private boolean mFirstFix = false; //是否已将图标添加到地图
     private Marker mLocMarker; //定位点
@@ -83,6 +83,6 @@ public abstract class BaseLocationDirectionActivity extends BaseLocationActivity
         options.anchor(0.5f, 0.5f);
         options.position(latlng);
         mLocMarker = (Marker) mBMap.addOverlay(options);
-        mLocMarker.setTitle(markerFlag);
+        mLocMarker.setTitle(LOCATION_TITLE);
     }
 }

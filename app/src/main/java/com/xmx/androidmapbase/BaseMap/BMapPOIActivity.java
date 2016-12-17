@@ -108,9 +108,9 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                         poiOverlay.addAllToMap();
                         //poiOverlay.zoomToSpan();
                         if (currentLatLng != null) {
-                            focusLocation(currentLatLng, 16);
+                            focusLocation(currentLatLng, 14);
                         } else {
-                            focusLocation(16);
+                            focusLocation(14);
                         }
                     }
 
@@ -313,6 +313,9 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                         currentCollect = marker;
                         return true;
                     }
+                    if (title.equals(LOCATION_TITLE)) {
+                        return true;
+                    }
                     whetherToShowDetailInfo(true);
                     try {
                         if (lastMarker == null) {
@@ -498,10 +501,8 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
     private void whetherToShowDetailInfo(boolean isToShow) {
         if (isToShow) {
             mPoiDetail.setVisibility(View.VISIBLE);
-            locationButton.setVisibility(View.GONE);
         } else {
             mPoiDetail.setVisibility(View.GONE);
-            locationButton.setVisibility(View.VISIBLE);
         }
     }
 

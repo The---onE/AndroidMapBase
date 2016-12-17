@@ -443,10 +443,8 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
     private void whetherToShowDetailInfo(boolean isToShow) {
         if (isToShow) {
             mPoiDetail.setVisibility(View.VISIBLE);
-            locationButton.setVisibility(View.GONE);
         } else {
             mPoiDetail.setVisibility(View.GONE);
-            locationButton.setVisibility(View.VISIBLE);
         }
     }
 
