@@ -35,7 +35,7 @@ public class POIManager {
     }
 
     private static final int DEFAULT_SEARCH_SIZE = 20;
-    private static final int DEFAULT_SEARCH_RADIUS = 2500;
+    private static final int DEFAULT_SEARCH_RADIUS = 5000;
 
     /**
      * 开始进行poi搜索
@@ -99,7 +99,7 @@ public class POIManager {
         );
     }
 
-    private List<POI> convertPOIList(List<PoiInfo> list) {
+    public static List<POI> convertPOIList(List<PoiInfo> list) {
         List<POI> poiList = new ArrayList<>();
         for (PoiInfo poiItem : list) {
             poiList.add(new POI(poiItem));

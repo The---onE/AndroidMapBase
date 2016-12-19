@@ -32,9 +32,8 @@ import com.avos.avoscloud.AVException;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
-import com.xmx.androidmapbase.Tools.Data.DataConstants;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POI;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POICloudManager;
+import com.xmx.androidmapbase.Tools.Map.AMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.AMap.Route.BusResultListAdapter;
 import com.xmx.androidmapbase.Tools.Map.AMap.Route.WalkRouteDetailActivity;
 import com.xmx.androidmapbase.Tools.Map.AMap.Route.WalkRouteOverlay;
@@ -320,7 +319,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
         mAMap.getUiSettings().setMyLocationButtonEnabled(false);//设置默认定位按钮是否显示
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
 
-        POICloudManager.getInstance().selectAll(new SelectCallback<POI>() {
+        CollectionManager.getInstance().selectAll(new SelectCallback<POI>() {
             @Override
             public void success(List<POI> poiList) {
                 for (POI poi : poiList) {
@@ -330,20 +329,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
 
             @Override
             public void syncError(int error) {
-                switch (error) {
-                    case DataConstants.NOT_INIT:
-                        showToast(R.string.failure);
-                        break;
-                    case DataConstants.NOT_LOGGED_IN:
-                        showToast(R.string.not_loggedin);
-                        break;
-                    case DataConstants.USERNAME_ERROR:
-                        showToast(R.string.username_error);
-                        break;
-                    case DataConstants.CHECKSUM_ERROR:
-                        showToast(R.string.not_loggedin);
-                        break;
-                }
+                CollectionManager.defaultError(error, getBaseContext());
             }
 
             @Override

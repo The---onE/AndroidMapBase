@@ -96,7 +96,7 @@ public class POIManager {
         poiSearch.searchPOIAsyn();// 异步搜索
     }
 
-    private List<POI> convertPOIList(List<PoiItem> list) {
+    public static List<POI> convertPOIList(List<PoiItem> list) {
         List<POI> poiList = new ArrayList<>();
         for (PoiItem poiItem :list) {
             poiList.add(new POI(poiItem));

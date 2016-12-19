@@ -1,7 +1,11 @@
 package com.xmx.androidmapbase.Tools.Data.Sync;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
+import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.Data.Callback.DelCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectLoginCallback;
@@ -214,5 +218,22 @@ public abstract class BaseSyncEntityManager<Entity extends ISyncEntity> {
                 callback.syncError(e);
             }
         });
+    }
+
+    public static void defaultError(int error, Context context) {
+        switch (error) {
+            case DataConstants.NOT_INIT:
+                Toast.makeText(context, R.string.failure, Toast.LENGTH_SHORT).show();
+                break;
+            case DataConstants.NOT_LOGGED_IN:
+                Toast.makeText(context, R.string.not_loggedin, Toast.LENGTH_SHORT).show();
+                break;
+            case DataConstants.USERNAME_ERROR:
+                Toast.makeText(context, R.string.username_error, Toast.LENGTH_SHORT).show();
+                break;
+            case DataConstants.CHECKSUM_ERROR:
+                Toast.makeText(context, R.string.not_loggedin, Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }

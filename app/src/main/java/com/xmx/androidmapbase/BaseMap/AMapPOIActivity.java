@@ -34,9 +34,8 @@ import com.xmx.androidmapbase.Tools.Data.Callback.DelCallback;
 import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
-import com.xmx.androidmapbase.Tools.Data.DataConstants;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POI;
-import com.xmx.androidmapbase.Tools.Map.AMap.POI.POICloudManager;
+import com.xmx.androidmapbase.Tools.Map.AMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.AMap.Utils.AMapServicesUtil;
 import com.xmx.androidmapbase.Tools.Map.AMap.Utils.AMapUtil;
 import com.xmx.androidmapbase.Tools.Map.AMap.Utils.ToastUtil;
@@ -139,10 +138,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                         showToast("地址:" + address);
                         List<PoiItem> list = regeocodeResult.getRegeocodeAddress().getPois();
                         if (list != null) {
-                            List<POI> poiList = new ArrayList<>();
-                            for (PoiItem poiItem : list) {
-                                poiList.add(new POI(poiItem));
-                            }
+                            List<POI> poiList = POIManager.convertPOIList(list);
                             showPOI(poiList);
                         }
                     } else {
@@ -217,7 +213,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                 public void onClick(DialogInterface dialogInterface, int i) {
                     POI poi = (POI) currentCollect.getObject();
                     String id = poi.mCloudId;
-                    POICloudManager.getInstance().deleteFromCloud(id,
+                    CollectionManager.getInstance().deleteFromCloud(id,
                             new DelCallback() {
                                 @Override
                                 public void success(AVObject user) {
@@ -228,20 +224,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
                                 @Override
                                 public void syncError(int error) {
-                                    switch (error) {
-                                        case DataConstants.NOT_INIT:
-                                            showToast(R.string.failure);
-                                            break;
-                                        case DataConstants.NOT_LOGGED_IN:
-                                            showToast(R.string.not_loggedin);
-                                            break;
-                                        case DataConstants.USERNAME_ERROR:
-                                            showToast(R.string.username_error);
-                                            break;
-                                        case DataConstants.CHECKSUM_ERROR:
-                                            showToast(R.string.not_loggedin);
-                                            break;
-                                    }
+                                    CollectionManager.defaultError(error, getBaseContext());
                                 }
 
                                 @Override
@@ -277,7 +260,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 //                        POISQLManager.getInstance().insertData(poi);
 //                        addCollectMarker(poi);
 //                        showToast("收藏成功");
-                            POICloudManager.getInstance().insertToCloud(poi, new InsertCallback() {
+                            CollectionManager.getInstance().insertToCloud(poi, new InsertCallback() {
                                 @Override
                                 public void success(AVObject user, String objectId) {
                                     poi.mCloudId = objectId;
@@ -287,20 +270,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
                                 @Override
                                 public void syncError(int error) {
-                                    switch (error) {
-                                        case DataConstants.NOT_INIT:
-                                            showToast(R.string.failure);
-                                            break;
-                                        case DataConstants.NOT_LOGGED_IN:
-                                            showToast(R.string.not_loggedin);
-                                            break;
-                                        case DataConstants.USERNAME_ERROR:
-                                            showToast(R.string.username_error);
-                                            break;
-                                        case DataConstants.CHECKSUM_ERROR:
-                                            showToast(R.string.not_loggedin);
-                                            break;
-                                    }
+                                    CollectionManager.defaultError(error, getBaseContext());
                                 }
 
                                 @Override
@@ -431,7 +401,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 //        for (POI poi : poiList) {
 //            addCollectMarker(poi);
 //        }
-        POICloudManager.getInstance().selectAll(new SelectCallback<POI>() {
+        CollectionManager.getInstance().selectAll(new SelectCallback<POI>() {
             @Override
             public void success(List<POI> poiList) {
                 for (POI poi : poiList) {
@@ -441,20 +411,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
             @Override
             public void syncError(int error) {
-                switch (error) {
-                    case DataConstants.NOT_INIT:
-                        showToast(R.string.failure);
-                        break;
-                    case DataConstants.NOT_LOGGED_IN:
-                        showToast(R.string.not_loggedin);
-                        break;
-                    case DataConstants.USERNAME_ERROR:
-                        showToast(R.string.username_error);
-                        break;
-                    case DataConstants.CHECKSUM_ERROR:
-                        showToast(R.string.not_loggedin);
-                        break;
-                }
+                CollectionManager.defaultError(error, getBaseContext());
             }
 
             @Override
