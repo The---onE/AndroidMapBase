@@ -36,10 +36,9 @@ import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
 import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POI;
-import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIConstants;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIManager;
-import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIOverlay;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POISearchCallback;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIView;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -52,13 +51,12 @@ import java.util.UUID;
 @ContentView(R.layout.activity_bmap_poi)
 public class BMapPOIActivity extends BaseLocationDirectionActivity {
 
-    private Marker lastMarker;
-    private POIOverlay poiOverlay;// poi图层
-
     private Marker currentMarker;
     private LatLng currentLatLng;
     private List<Marker> collectMarkers = new ArrayList<>();
     private Marker currentCollect;
+
+    private POIView poiView;
 
     @ViewInject(R.id.poi_name)
     private TextView mPoiName;
@@ -99,12 +97,19 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 new POISearchCallback() {
                     @Override
                     public void success(List<POI> poiItems) {
-                        showPOI(poiItems);
+                        //清除POI信息显示
+                        whetherToShowDetailInfo(false);
+                        if (currentLatLng != null) {
+                            focusLocation(currentLatLng, 14);
+                        } else {
+                            focusLocation(14);
+                        }
+                        poiView.showPOI(poiItems);
                     }
 
                     @Override
                     public void suggest(List<CityInfo> cities) {
-                        showSuggestCity(cities);
+                        poiView.showSuggestCity(cities);
                     }
 
                     @Override
@@ -127,9 +132,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 LatLng location = geoCodeResult.getLocation();
                 if (location != null) {
                     whetherToShowDetailInfo(false);
-                    if (lastMarker != null) {
-                        resetLastMarker();
-                    }
+                    poiView.resetMarker();
                     setCurrentPosition(location);
                     focusLocation(location);
                 } else {
@@ -146,7 +149,14 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 List<PoiInfo> list = reverseGeoCodeResult.getPoiList();
                 if (list != null) {
                     List<POI> poiList = POIManager.convertPOIList(list);
-                    showPOI(poiList);
+                    //清除POI信息显示
+                    whetherToShowDetailInfo(false);
+                    if (currentLatLng != null) {
+                        focusLocation(currentLatLng, 14);
+                    } else {
+                        focusLocation(14);
+                    }
+                    poiView.showPOI(poiList);
                 }
                 mGeoCoder.destroy();
             }
@@ -175,9 +185,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
     @Event(R.id.btn_cancel)
     private void onCancelClick(View view) {
         mSearchText.setText("");
-        if (poiOverlay != null) {
-            poiOverlay.removeAllFromMap();
-        }
+        poiView.removeFromMap();
         whetherToShowDetailInfo(false);
     }
 
@@ -292,6 +300,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
     protected void initView(Bundle savedInstanceState) {
         super.initView(savedInstanceState);
 
+        poiView = new POIView(this, mBMap);
         //aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
     }
 
@@ -301,9 +310,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
             @Override
             public void onMapClick(LatLng latLng) {
                 whetherToShowDetailInfo(false);
-                if (lastMarker != null) {
-                    resetLastMarker();
-                }
+                poiView.resetMarker();
 
                 setCurrentPosition(latLng);
             }
@@ -313,9 +320,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 showToast(mapPoi.getName());
                 LatLng latLng = mapPoi.getPosition();
                 whetherToShowDetailInfo(false);
-                if (lastMarker != null) {
-                    resetLastMarker();
-                }
+                poiView.resetMarker();
 
                 setCurrentPosition(latLng);
                 return true;
@@ -338,13 +343,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                     }
                     whetherToShowDetailInfo(true);
                     try {
-                        if (lastMarker == null) {
-                            lastMarker = marker;
-                        } else {
-                            // 将之前被点击的marker置为原来的状态
-                            resetLastMarker();
-                            lastMarker = marker;
-                        }
+                        poiView.resetMarker(marker);
                         Marker detailMarker = marker;
                         detailMarker.setIcon(BitmapDescriptorFactory
                                 .fromBitmap(BitmapFactory.decodeResource(
@@ -357,9 +356,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                     }
                 } else {
                     whetherToShowDetailInfo(false);
-                    if (lastMarker != null) {
-                        resetLastMarker();
-                    }
+                    poiView.resetMarker();
                 }
                 return false;
             }
@@ -455,45 +452,6 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
         marker.setExtraInfo(info);
 
         collectMarkers.add(marker);
-
-    }
-
-    private void showPOI(List<POI> poiItems) {
-        //清除POI信息显示
-        whetherToShowDetailInfo(false);
-        //并还原点击marker样式
-        if (lastMarker != null) {
-            resetLastMarker();
-        }
-        //清理之前搜索结果的marker
-        if (poiOverlay != null) {
-            poiOverlay.removeAllFromMap();
-        }
-        whetherToShowDetailInfo(false);
-        poiOverlay = new POIOverlay(mBMap, poiItems, getBaseContext());
-        poiOverlay.addAllToMap();
-        //poiOverlay.zoomToSpan();
-        if (currentLatLng != null) {
-            focusLocation(currentLatLng, 14);
-        } else {
-            focusLocation(14);
-        }
-    }
-
-    // 将之前被点击的marker置为原来的状态
-    private void resetLastMarker() {
-        int index = poiOverlay.getPoiIndex(lastMarker);
-        if (index < POIConstants.MARKERS.length) {
-            lastMarker.setIcon(BitmapDescriptorFactory
-                    .fromBitmap(BitmapFactory.decodeResource(
-                            getResources(),
-                            POIConstants.MARKERS[index])));
-        } else {
-            lastMarker.setIcon(BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(getResources(), R.drawable.marker_other_highlight)));
-        }
-        lastMarker = null;
-
     }
 
     private void setCurrentPosition(LatLng latLng) {
@@ -533,17 +491,6 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
         } else {
             mPoiDetail.setVisibility(View.GONE);
         }
-    }
-
-    /**
-     * poi没有搜索到数据，返回一些推荐城市的信息
-     */
-    private void showSuggestCity(List<CityInfo> cities) {
-        String information = "推荐城市\n";
-        for (CityInfo city : cities) {
-            information += "城市名称:" + city.city + "城市区号:" + "\n";
-        }
-        showToast(information);
     }
 
     @Override
