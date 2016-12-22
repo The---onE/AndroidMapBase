@@ -21,7 +21,6 @@ import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.CityInfo;
 import com.baidu.mapapi.search.core.PoiInfo;
 import com.baidu.mapapi.search.geocode.GeoCodeOption;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
@@ -37,8 +36,8 @@ import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationDirectionActiv
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POI;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIManager;
-import com.xmx.androidmapbase.Tools.Map.BMap.POI.POISearchCallback;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIView;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIViewSearchCallback;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -91,30 +90,12 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
         if (currentLatLng != null) {
             position = currentLatLng;
         }
-
-        POIManager.getInstance().searchPOIQuery(position, 0,
-                0, 0, keyword,
-                new POISearchCallback() {
+        poiView.searchAndShowPOI(position, 0,
+                0, 0, keyword, new POIViewSearchCallback() {
                     @Override
-                    public void success(List<POI> poiItems) {
-                        //清除POI信息显示
+                    public void success() {
                         whetherToShowDetailInfo(false);
-                        if (currentLatLng != null) {
-                            focusLocation(currentLatLng, 14);
-                        } else {
-                            focusLocation(14);
-                        }
-                        poiView.showPOI(poiItems);
-                    }
-
-                    @Override
-                    public void suggest(List<CityInfo> cities) {
-                        poiView.showSuggestCity(cities);
-                    }
-
-                    @Override
-                    public void noData() {
-                        showToast(R.string.no_result);
+                        focusPOISearch();
                     }
                 });
     }
@@ -151,11 +132,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                     List<POI> poiList = POIManager.convertPOIList(list);
                     //清除POI信息显示
                     whetherToShowDetailInfo(false);
-                    if (currentLatLng != null) {
-                        focusLocation(currentLatLng, 14);
-                    } else {
-                        focusLocation(14);
-                    }
+                    focusPOISearch();
                     poiView.showPOI(poiList);
                 }
                 mGeoCoder.destroy();
@@ -490,6 +467,14 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
             mPoiDetail.setVisibility(View.VISIBLE);
         } else {
             mPoiDetail.setVisibility(View.GONE);
+        }
+    }
+
+    private void focusPOISearch() {
+        if (currentLatLng != null) {
+            focusLocation(currentLatLng, 14);
+        } else {
+            focusLocation(14);
         }
     }
 

@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.CityInfo;
 import com.xmx.androidmapbase.R;
 
@@ -27,6 +28,30 @@ public class POIView {
     public POIView(Context context, BaiduMap map) {
         mContext = context;
         mBMap = map;
+    }
+
+    public void searchAndShowPOI(LatLng position, int radius,
+                                 int page, int size,
+                                 String keyword, final POIViewSearchCallback callback) {
+        POIManager.getInstance().searchPOIQuery(position, radius,
+                page, size, keyword,
+                new POISearchCallback() {
+                    @Override
+                    public void success(List<POI> poiItems) {
+                        callback.success();
+                        showPOI(poiItems);
+                    }
+
+                    @Override
+                    public void suggest(List<CityInfo> cities) {
+                        showSuggestCity(cities);
+                    }
+
+                    @Override
+                    public void noData() {
+                        showToast(R.string.no_result);
+                    }
+                });
     }
 
     public void resetMarker() {
