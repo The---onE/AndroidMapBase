@@ -34,6 +34,7 @@ import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
 import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionManager;
+import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionView;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POI;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIManager;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIView;
@@ -52,10 +53,10 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
 
     private Marker currentMarker;
     private LatLng currentLatLng;
-    private List<Marker> collectMarkers = new ArrayList<>();
     private Marker currentCollect;
 
     private POIView poiView;
+    private CollectionView collectionView;
 
     @ViewInject(R.id.poi_name)
     private TextView mPoiName;
@@ -231,7 +232,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                                 @Override
                                 public void success(AVObject user, String objectId) {
                                     poi.mCloudId = objectId;
-                                    addCollectMarker(poi);
+                                    collectionView.addCollection(poi);
                                     showToast("收藏成功");
                                 }
 
@@ -278,6 +279,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
         super.initView(savedInstanceState);
 
         poiView = new POIView(this, mBMap);
+        collectionView = new CollectionView(this, mBMap);
         //aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
     }
 
@@ -310,7 +312,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 setCurrentPosition(marker.getPosition());
                 String title = marker.getTitle();
                 if (title != null && !title.equals("")) {
-                    if (collectMarkers.contains(marker)) {
+                    if (collectionView.isCollect(marker)) {
                         showToast(marker.getTitle());
                         currentCollect = marker;
                         return true;
@@ -395,7 +397,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
             @Override
             public void success(List<POI> poiList) {
                 for (POI poi : poiList) {
-                    addCollectMarker(poi);
+                    collectionView.addCollection(poi);
                 }
             }
 
@@ -410,25 +412,6 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                 filterException(e);
             }
         });
-    }
-
-    private void addCollectMarker(POI poi) {
-        MarkerOptions m = new MarkerOptions()
-                .position(new LatLng(poi.location.latitude,
-                        poi.location.longitude))
-                .icon(BitmapDescriptorFactory
-                        .fromBitmap(BitmapFactory.decodeResource(
-                                getResources(),
-                                R.drawable.point5)))
-                .anchor(0.5f, 0.5f)
-                .title(poi.name);
-        Marker marker = (Marker) mBMap.addOverlay(m);
-
-        Bundle info = new Bundle();
-        info.putString("id", poi.mCloudId);
-        marker.setExtraInfo(info);
-
-        collectMarkers.add(marker);
     }
 
     private void setCurrentPosition(LatLng latLng) {
