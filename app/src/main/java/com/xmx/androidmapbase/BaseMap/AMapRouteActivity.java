@@ -32,6 +32,7 @@ import com.avos.avoscloud.AVException;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
+import com.xmx.androidmapbase.Tools.Map.AMap.POI.CollectionView;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POI;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.AMap.Route.BusResultListAdapter;
@@ -60,7 +61,8 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
     private LatLng subLatLng;
     private Marker currentMarker;
     private LatLng currentLatLng;
-    private List<Marker> collectMarkers = new ArrayList<>();
+
+    private CollectionView collectionView;
 
     @ViewInject(R.id.btn_route)
     private Button routeButton;
@@ -164,6 +166,8 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
     protected void initView(Bundle savedInstanceState) {
         super.initView(savedInstanceState);
 
+        collectionView = new CollectionView(this, mAMap);
+
         strokeColor = Color.argb(180, 3, 145, 255);
         fillColor = Color.argb(64, 128, 192, 192);
         markerFlag = "myLocation";
@@ -219,7 +223,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
             public boolean onMarkerClick(Marker marker) {
                 Object o = marker.getObject();
                 if (o != null) {
-                    if (collectMarkers.contains(marker)) {
+                    if (collectionView.isCollect(marker)) {
                         POI poi = (POI) o;
                         showToast(poi.getTitle());
                         return true;
@@ -323,7 +327,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
             @Override
             public void success(List<POI> poiList) {
                 for (POI poi : poiList) {
-                    addCollectMarker(poi);
+                    collectionView.addCollection(poi);
                 }
             }
 
@@ -338,21 +342,6 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
                 filterException(e);
             }
         });
-    }
-
-    private void addCollectMarker(POI poi) {
-        MarkerOptions m = new MarkerOptions()
-                .position(new LatLng(poi.getLatLonPoint().getLatitude(),
-                        poi.getLatLonPoint().getLongitude()))
-                .icon(BitmapDescriptorFactory
-                        .fromBitmap(BitmapFactory.decodeResource(
-                                getResources(),
-                                R.drawable.point5)))
-                .anchor(0.5f, 0.5f);
-        Marker marker = mAMap.addMarker(m);
-        marker.setObject(poi);
-        collectMarkers.add(marker);
-
     }
 
     @Override

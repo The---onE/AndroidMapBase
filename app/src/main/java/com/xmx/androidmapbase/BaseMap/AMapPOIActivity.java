@@ -33,6 +33,7 @@ import com.xmx.androidmapbase.Tools.Data.Callback.DelCallback;
 import com.xmx.androidmapbase.Tools.Map.AMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
+import com.xmx.androidmapbase.Tools.Map.AMap.POI.CollectionView;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POI;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.AMap.POI.POIView;
@@ -55,10 +56,10 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
     private Marker currentMarker;
     private LatLng currentLatLng;
-    private List<Marker> collectMarkers = new ArrayList<>();
     private Marker currentCollect;
 
     private POIView poiView;
+    private CollectionView collectionView;
 
     @ViewInject(R.id.poi_name)
     private TextView mPoiName;
@@ -244,7 +245,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                                 @Override
                                 public void success(AVObject user, String objectId) {
                                     poi.mCloudId = objectId;
-                                    addCollectMarker(poi);
+                                    collectionView.addCollection(poi);
                                     showToast("收藏成功");
                                 }
 
@@ -291,6 +292,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
         super.initView(savedInstanceState);
 
         poiView = new POIView(this, mAMap);
+        collectionView = new CollectionView(this, mAMap);
 
         strokeColor = Color.argb(180, 3, 145, 255);
         fillColor = Color.argb(64, 128, 192, 192);
@@ -315,7 +317,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                 setCurrentPosition(marker.getPosition());
                 Object o = marker.getObject();
                 if (o != null) {
-                    if (collectMarkers.contains(marker)) {
+                    if (collectionView.isCollect(marker)) {
                         POI poi = (POI) o;
                         showToast(poi.getTitle());
                         currentCollect = marker;
@@ -377,7 +379,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             @Override
             public void success(List<POI> poiList) {
                 for (POI poi : poiList) {
-                    addCollectMarker(poi);
+                    collectionView.addCollection(poi);
                 }
             }
 
@@ -392,20 +394,6 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                 filterException(e);
             }
         });
-    }
-
-    private void addCollectMarker(POI poi) {
-        MarkerOptions m = new MarkerOptions()
-                .position(new LatLng(poi.getLatLonPoint().getLatitude(),
-                        poi.getLatLonPoint().getLongitude()))
-                .icon(BitmapDescriptorFactory
-                        .fromBitmap(BitmapFactory.decodeResource(
-                                getResources(),
-                                R.drawable.point5)))
-                .anchor(0.5f, 0.5f);
-        Marker marker = mAMap.addMarker(m);
-        marker.setObject(poi);
-        collectMarkers.add(marker);
     }
 
     private void setPoiItemDisplayContent(final POI mCurrentPoi) {
