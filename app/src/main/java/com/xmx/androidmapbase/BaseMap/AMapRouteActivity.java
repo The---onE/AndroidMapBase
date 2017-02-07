@@ -179,22 +179,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
         mAMap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if (currentMarker != null) {
-                    currentMarker.remove();
-                    currentMarker = null;
-                }
-                MarkerOptions m = new MarkerOptions()
-                        .position(
-                                new LatLng(latLng.latitude, latLng.longitude))
-                        .icon(BitmapDescriptorFactory
-                                .fromBitmap(BitmapFactory.decodeResource(
-                                        getResources(),
-                                        R.drawable.point6)))
-                        .anchor(0.5f, 0.5f);
-                currentMarker = mAMap.addMarker(m);
-                currentLatLng = latLng;
-
-                routeButton.setVisibility(View.VISIBLE);
+                setCurrentPosition(latLng);
             }
         });
         mAMap.setOnMapLongClickListener(new AMap.OnMapLongClickListener() {
@@ -221,6 +206,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                setCurrentPosition(marker.getPosition());
                 Object o = marker.getObject();
                 if (o != null) {
                     if (collectionView.isCollect(marker)) {
@@ -342,6 +328,25 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
                 filterException(e);
             }
         });
+    }
+
+    private void setCurrentPosition(LatLng latLng) {
+        if (currentMarker != null) {
+            currentMarker.remove();
+            currentMarker = null;
+        }
+        MarkerOptions m = new MarkerOptions()
+                .position(
+                        new LatLng(latLng.latitude, latLng.longitude))
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(BitmapFactory.decodeResource(
+                                getResources(),
+                                R.drawable.point6)))
+                .anchor(0.5f, 0.5f);
+        currentMarker = mAMap.addMarker(m);
+        currentLatLng = latLng;
+
+        routeButton.setVisibility(View.VISIBLE);
     }
 
     @Override
