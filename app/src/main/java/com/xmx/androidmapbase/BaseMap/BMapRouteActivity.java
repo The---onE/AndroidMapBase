@@ -2,50 +2,49 @@ package com.xmx.androidmapbase.BaseMap;
 
 import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.PoiInfo;
-import com.baidu.mapapi.search.geocode.GeoCodeOption;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.baidu.mapapi.search.core.RouteLine;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRouteLine;
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.xmx.androidmapbase.R;
-import com.xmx.androidmapbase.Tools.Data.Callback.DelCallback;
-import com.xmx.androidmapbase.Tools.Data.Callback.InsertCallback;
 import com.xmx.androidmapbase.Tools.Data.Callback.SelectCallback;
 import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionView;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POI;
-import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIManager;
-import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIView;
-import com.xmx.androidmapbase.Tools.Map.BMap.POI.POIViewSearchCallback;
+import com.xmx.androidmapbase.Tools.Map.BMap.Route.OverlayManager;
+import com.xmx.androidmapbase.Tools.Map.BMap.Route.WalkingRouteOverlay;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
 import java.util.List;
-import java.util.UUID;
 
 @ContentView(R.layout.activity_bmap_route)
 public class BMapRouteActivity extends BaseLocationDirectionActivity {
@@ -54,6 +53,15 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     private LatLng subLatLng;
     private Marker currentMarker;
     private LatLng currentLatLng;
+
+    // 路线相关变量
+    RoutePlanSearch mSearch;
+    int nodeIndex = -1; // 节点索引,供浏览节点时使用
+    RouteLine route = null;
+    boolean useDefaultIcon = false;
+    OverlayManager routeOverlay = null;
+
+    WalkingRouteResult nowResultWalk = null;
 
     private CollectionView collectionView;
 
@@ -74,6 +82,62 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     }
 
     // 路线相关点击事件
+    @Event(R.id.cancel_route)
+    private void onCancelRouteClick(View view) {
+        bottomLayout.setVisibility(View.GONE);
+        // mWalkRouteOverlay.removeFromMap();
+    }
+
+    @Event(R.id.btn_cancel_bus)
+    private void onCancelBusClick(View view) {
+        //busResultLayout.setVisibility(View.GONE);
+    }
+
+    @Event(R.id.btn_route)
+    private void onRouteClick(View view) {
+        if (mLocation == null) {
+            showToast("定位中，稍后再试...");
+            return;
+        }
+        if (currentLatLng == null) {
+            showToast("终点未设置");
+        }
+        final LatLng start;
+        if (subLatLng != null) {
+            start = subLatLng;
+        } else {
+            start = mLocation;
+        }
+        final LatLng end = currentLatLng;
+
+        String routeType[] = {"步行路线", "公交路线"};
+        new AlertDialog.Builder(BMapRouteActivity.this)
+                .setTitle("路线类型")
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setItems(routeType, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                searchWalkRoute(start, end);
+                                break;
+                            case 1:
+                                //searchBusRoute(start, end);
+                                break;
+                        }
+                    }
+                })
+                .setNegativeButton("取消", null).show();
+    }
+
+    private void searchWalkRoute(LatLng start, LatLng end) {
+        showToast("正在搜索");
+        PlanNode stNode = PlanNode.withLocation(start);
+        PlanNode enNode = PlanNode.withLocation(end);
+        mSearch.walkingSearch(new WalkingRoutePlanOption()
+                .from(stNode)
+                .to(enNode));
+    }
 
     @Override
     protected void getMapView() {
@@ -116,6 +180,15 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
                     if (title.equals(LOCATION_TITLE)) {
                         return true;
                     }
+                } else if (routeOverlay instanceof WalkingRouteOverlay) {
+                    WalkingRouteOverlay overlay = (WalkingRouteOverlay) routeOverlay;
+                    WalkingRouteLine.WalkingStep step = overlay.getWalkingStep(marker);
+                    if (step != null) {
+                        String instructions = step.getInstructions();
+                        instructions = instructions.replaceAll("<b>", "【");
+                        instructions = instructions.replaceAll("</b>", "】");
+                        showToast(instructions);
+                    }
                 }
                 return false;
             }
@@ -144,6 +217,82 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
         });
 
         // 路线查询事件
+        mSearch = RoutePlanSearch.newInstance();
+        mSearch.setOnGetRoutePlanResultListener(new OnGetRoutePlanResultListener() {
+            @Override
+            public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
+                if (walkingRouteResult == null || walkingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
+                    showToast("抱歉，未找到结果");
+                }
+                if (walkingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                    // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+                    // walkingRouteResult.getSuggestAddrInfo()
+                    return;
+                }
+                if (walkingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                    if (routeOverlay != null) {
+                        routeOverlay.removeFromMap();
+                    }
+                    nodeIndex = -1;
+//                    mBtnPre.setVisibility(View.VISIBLE);
+//                    mBtnNext.setVisibility(View.VISIBLE);
+
+                    if (walkingRouteResult.getRouteLines().size() >= 1) {
+                        // 直接显示
+                        route = walkingRouteResult.getRouteLines().get(0);
+                        WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBMap){
+                            @Override
+                            public BitmapDescriptor getStartMarker() {
+                                if (useDefaultIcon) {
+                                    return BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
+                                }
+                                return null;
+                            }
+
+                            @Override
+                            public BitmapDescriptor getTerminalMarker() {
+                                if (useDefaultIcon) {
+                                    return BitmapDescriptorFactory.fromResource(R.drawable.icon_en);
+                                }
+                                return null;
+                            }
+                        };
+                        // mBMap.setOnMarkerClickListener(overlay);
+                        routeOverlay = overlay;
+                        overlay.setData(walkingRouteResult.getRouteLines().get(0));
+                        overlay.addToMap();
+                        overlay.zoomToSpan();
+                    } else {
+                        showToast(R.string.no_result);
+                    }
+                }
+            }
+
+            @Override
+            public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
+
+            }
+
+            @Override
+            public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
+
+            }
+
+            @Override
+            public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
+
+            }
+
+            @Override
+            public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
+
+            }
+
+            @Override
+            public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
+
+            }
+        });
     }
 
     @Override
@@ -192,11 +341,6 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     @Override
     protected void processLogic(Bundle savedInstanceState) {
         super.processLogic(savedInstanceState);
-
-//        List<POI> poiList = POISQLManager.getInstance().selectAll();
-//        for (POI poi : poiList) {
-//            addCollectMarker(poi);
-//        }
         CollectionManager.getInstance().selectAll(new SelectCallback<POI>() {
             @Override
             public void success(List<POI> poiList) {
