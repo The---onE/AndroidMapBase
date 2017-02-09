@@ -36,7 +36,7 @@ public class BusRouteDetailActivity extends Activity implements OnMapLoadedListe
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_route_detail);
+		setContentView(R.layout.activity_amap_route_detail);
 		mapView = (MapView) findViewById(R.id.route_map);
 		mapView.onCreate(savedInstanceState);// 此方法必须重写
 		getIntentData();

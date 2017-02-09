@@ -1,12 +1,14 @@
 package com.xmx.androidmapbase.BaseMap;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
 import com.baidu.location.BDLocation;
@@ -38,7 +40,9 @@ import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionView;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POI;
 import com.xmx.androidmapbase.Tools.Map.BMap.Route.OverlayManager;
+import com.xmx.androidmapbase.Tools.Map.BMap.Route.WalkRouteDetailActivity;
 import com.xmx.androidmapbase.Tools.Map.BMap.Route.WalkingRouteOverlay;
+import com.xmx.androidmapbase.Tools.Map.BMap.Utils.BMapUtil;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -69,6 +73,11 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     private Button routeButton;
 
     // 路线相关控件
+    @ViewInject(R.id.firstline)
+    private TextView routeTimeDesView;
+
+    @ViewInject(R.id.secondline)
+    private TextView routeDetailDesView;
 
     @ViewInject(R.id.btn_location)
     private Button locationButton;
@@ -85,7 +94,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     @Event(R.id.cancel_route)
     private void onCancelRouteClick(View view) {
         bottomLayout.setVisibility(View.GONE);
-        // mWalkRouteOverlay.removeFromMap();
+        routeOverlay.removeFromMap();
     }
 
     @Event(R.id.btn_cancel_bus)
@@ -220,7 +229,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
         mSearch = RoutePlanSearch.newInstance();
         mSearch.setOnGetRoutePlanResultListener(new OnGetRoutePlanResultListener() {
             @Override
-            public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
+            public void onGetWalkingRouteResult(final WalkingRouteResult walkingRouteResult) {
                 if (walkingRouteResult == null || walkingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
                     showToast("抱歉，未找到结果");
                 }
@@ -262,6 +271,22 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
                         overlay.setData(walkingRouteResult.getRouteLines().get(0));
                         overlay.addToMap();
                         overlay.zoomToSpan();
+                        bottomLayout.setVisibility(View.VISIBLE);
+                        int dis = route.getDistance();
+                        int dur = route.getDuration();
+                        String des = BMapUtil.getFriendlyTime(dur) + "(" + BMapUtil.getFriendlyLength(dis) + ")";
+                        routeTimeDesView.setText(des);
+                        routeDetailDesView.setVisibility(View.GONE);
+                        bottomLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(BMapRouteActivity.this, WalkRouteDetailActivity.class);
+                                intent.putExtra("walk_path", walkingRouteResult.getRouteLines().get(0));
+                                intent.putExtra("walk_result",
+                                        walkingRouteResult);
+                                startActivity(intent);
+                            }
+                        });
                     } else {
                         showToast(R.string.no_result);
                     }
