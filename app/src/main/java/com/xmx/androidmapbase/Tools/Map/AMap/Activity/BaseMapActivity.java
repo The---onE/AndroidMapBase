@@ -27,7 +27,7 @@ public abstract class BaseMapActivity extends BaseActivity {
 
     protected AMap mAMap;
     protected MapView mMapView;
-    public static final float DEFAULT_SCALE = 15; //默认缩放比例
+    public static final float DEFAULT_SCALE = 16; //默认缩放比例
 
     protected abstract void getMapView();
     protected abstract void whenResume();

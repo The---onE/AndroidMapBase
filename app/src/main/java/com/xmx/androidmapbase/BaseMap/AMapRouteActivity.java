@@ -215,7 +215,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
                         return true;
                     }
                 }
-                return false;
+                return true;
             }
         });
 
