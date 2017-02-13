@@ -102,18 +102,19 @@
             android:textSize="18sp" />
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/bus_result"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/transparent"
-        android:orientation="vertical"
         android:visibility="gone">
 
         <ListView
             android:id="@+id/bus_result_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/btn_cancel_bus"
+            android:layout_alignParentTop="true"
             android:cacheColorHint="#00000000"
             android:divider="@null"
             android:fadingEdge="none"
@@ -126,9 +127,10 @@
             android:id="@+id/btn_cancel_bus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="取消"/>
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="取消" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -80,7 +79,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
     private ListView busResultList;
 
     @ViewInject(R.id.bus_result)
-    private LinearLayout busResultLayout;
+    private RelativeLayout busResultLayout;
 
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -91,7 +90,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     private RelativeLayout bottomLayout;
 
     @ViewInject(R.id.bus_result)
-    private LinearLayout busResultLayout;
+    private RelativeLayout busResultLayout;
 
     @ViewInject(R.id.bus_result_list)
     private ListView busResultList;

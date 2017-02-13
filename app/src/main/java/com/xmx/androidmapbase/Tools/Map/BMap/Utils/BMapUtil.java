@@ -214,38 +214,76 @@ public class BMapUtil {
         if (busSteps == null) {
             return String.valueOf("");
         }
-        List<String> sqe = new ArrayList<>();
-        for (List<MassTransitRouteLine.TransitStep> stepGroup : busSteps) {
-            List<String> group = new ArrayList<>();
-            for (MassTransitRouteLine.TransitStep step : stepGroup) {
-                switch (step.getVehileType()) {
-                    case ESTEP_WALK:
-                        break;
-                    case ESTEP_DRIVING:
-                        group.add(step.getInstructions());
-                        break;
-                    case ESTEP_TRAIN:
-                        group.add(step.getTrainInfo().getName());
-                        break;
-                    case ESTEP_PLANE:
-                        group.add(step.getPlaneInfo().getName());
-                        break;
-                    case ESTEP_BUS:
-                        group.add(step.getBusInfo().getName());
-                        break;
-                    case ESTEP_COACH:
-                        group.add(step.getCoachInfo().getName());
-                        break;
-                    default:
-                        group.add(step.getInstructions());
-                        break;
+
+        if (busPath.getPriceInfo() != null && busPath.getPriceInfo().size() > 0) {
+            // 同城公交
+            List<String> sqe = new ArrayList<>();
+            for (List<MassTransitRouteLine.TransitStep> stepGroup : busSteps) {
+                List<String> group = new ArrayList<>();
+                for (MassTransitRouteLine.TransitStep step : stepGroup) {
+                    switch (step.getVehileType()) {
+                        case ESTEP_WALK:
+                            break;
+                        case ESTEP_DRIVING:
+                            group.add(step.getInstructions());
+                            break;
+                        case ESTEP_TRAIN:
+                            group.add(step.getTrainInfo().getName());
+                            break;
+                        case ESTEP_PLANE:
+                            group.add(step.getPlaneInfo().getName());
+                            break;
+                        case ESTEP_BUS:
+                            group.add(step.getBusInfo().getName());
+                            break;
+                        case ESTEP_COACH:
+                            group.add(step.getCoachInfo().getName());
+                            break;
+                        default:
+                            group.add(step.getInstructions());
+                            break;
+                    }
+                }
+                if (group.size() > 0) {
+                    sqe.add(join(group, "|"));
                 }
             }
-            if (group.size() > 0) {
-                sqe.add(join(group, "|"));
+            return join(sqe, " > ");
+        } else {
+            // 跨城公交
+            List<String> sqe = new ArrayList<>();
+            for (List<MassTransitRouteLine.TransitStep> stepGroup : busSteps) {
+                List<String> group = new ArrayList<>();
+                for (MassTransitRouteLine.TransitStep step : stepGroup) {
+                    switch (step.getVehileType()) {
+                        case ESTEP_WALK:
+                            break;
+                        case ESTEP_DRIVING:
+                            group.add(step.getInstructions());
+                            break;
+                        case ESTEP_TRAIN:
+                            group.add(step.getTrainInfo().getName());
+                            break;
+                        case ESTEP_PLANE:
+                            group.add(step.getPlaneInfo().getName());
+                            break;
+                        case ESTEP_BUS:
+                            group.add(step.getBusInfo().getName());
+                            break;
+                        case ESTEP_COACH:
+                            group.add(step.getCoachInfo().getName());
+                            break;
+                        default:
+                            group.add(step.getInstructions());
+                            break;
+                    }
+                }
+                if (group.size() > 0) {
+                    sqe.add(join(group, "-"));
+                }
             }
+            return join(sqe, " > ");
         }
-        return join(sqe, " > ");
     }
 
     public static String getBusPathDes(MassTransitRouteLine busPath) {
@@ -256,9 +294,10 @@ public class BMapUtil {
         String time = getFriendlyTime((int) second);
         float subDistance = busPath.getDistance();
         String subDis = getFriendlyLength((int) subDistance);
+        double price = busPath.getPrice();
         float walkDistance = getWalkDistance(busPath);
         String walkDis = getFriendlyLength((int) walkDistance);
-        return String.valueOf(time + " | " + subDis + " | 步行" + walkDis);
+        return String.valueOf(time + " | " + subDis + " | 步行" + walkDis + " | " + price + "元");
     }
 
     public static int getWalkDistance(MassTransitRouteLine busPath) {
