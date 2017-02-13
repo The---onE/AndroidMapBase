@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,6 +27,7 @@ import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRoutePlanOption;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
 import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
 import com.baidu.mapapi.search.route.PlanNode;
@@ -39,6 +42,7 @@ import com.xmx.androidmapbase.Tools.Map.BMap.Activity.BaseLocationDirectionActiv
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionManager;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.CollectionView;
 import com.xmx.androidmapbase.Tools.Map.BMap.POI.POI;
+import com.xmx.androidmapbase.Tools.Map.BMap.Route.BusResultListAdapter;
 import com.xmx.androidmapbase.Tools.Map.BMap.Route.OverlayManager;
 import com.xmx.androidmapbase.Tools.Map.BMap.Route.WalkRouteDetailActivity;
 import com.xmx.androidmapbase.Tools.Map.BMap.Route.WalkingRouteOverlay;
@@ -64,6 +68,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     RouteLine route = null;
     boolean useDefaultIcon = false;
     OverlayManager routeOverlay = null;
+    MassTransitRouteResult mBusRouteResult;
 
     WalkingRouteResult nowResultWalk = null;
 
@@ -85,6 +90,12 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
     @ViewInject(R.id.bottom_layout)
     private RelativeLayout bottomLayout;
 
+    @ViewInject(R.id.bus_result)
+    private LinearLayout busResultLayout;
+
+    @ViewInject(R.id.bus_result_list)
+    private ListView busResultList;
+
     @Event(R.id.btn_location)
     private void onLocationClick(View view) {
         focusLocation();
@@ -99,7 +110,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
 
     @Event(R.id.btn_cancel_bus)
     private void onCancelBusClick(View view) {
-        //busResultLayout.setVisibility(View.GONE);
+        busResultLayout.setVisibility(View.GONE);
     }
 
     @Event(R.id.btn_route)
@@ -131,7 +142,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
                                 searchWalkRoute(start, end);
                                 break;
                             case 1:
-                                //searchBusRoute(start, end);
+                                searchBusRoute(start, end);
                                 break;
                         }
                     }
@@ -146,6 +157,16 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
         mSearch.walkingSearch(new WalkingRoutePlanOption()
                 .from(stNode)
                 .to(enNode));
+    }
+
+    private void searchBusRoute(LatLng start, LatLng end) {
+        showToast("正在搜索");
+        PlanNode stNode = PlanNode.withLocation(start);
+        PlanNode enNode = PlanNode.withLocation(end);
+
+        mSearch.masstransitSearch(new MassTransitRoutePlanOption().
+                from(stNode).
+                to(enNode));
     }
 
     @Override
@@ -232,13 +253,11 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
             public void onGetWalkingRouteResult(final WalkingRouteResult walkingRouteResult) {
                 if (walkingRouteResult == null || walkingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
                     showToast("抱歉，未找到结果");
-                }
-                if (walkingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                } else if (walkingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
                     // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
                     // walkingRouteResult.getSuggestAddrInfo()
                     return;
-                }
-                if (walkingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                } else if (walkingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
                     if (routeOverlay != null) {
                         routeOverlay.removeFromMap();
                     }
@@ -249,7 +268,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
                     if (walkingRouteResult.getRouteLines().size() >= 1) {
                         // 直接显示
                         route = walkingRouteResult.getRouteLines().get(0);
-                        WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBMap){
+                        WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBMap) {
                             @Override
                             public BitmapDescriptor getStartMarker() {
                                 if (useDefaultIcon) {
@@ -300,7 +319,31 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
 
             @Override
             public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
+                if (massTransitRouteResult == null || massTransitRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
+                    showToast("抱歉，未找到结果");
+                } else if (massTransitRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                    // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+                    // walkingRouteResult.getSuggestAddrInfo()
+                    return;
+                } else if (massTransitRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                    if (routeOverlay != null) {
+                        routeOverlay.removeFromMap();
+                    }
+                    nodeIndex = -1;
+//                    mBtnPre.setVisibility(View.VISIBLE);
+//                    mBtnNext.setVisibility(View.VISIBLE);
 
+                    if (massTransitRouteResult.getRouteLines().size() >= 1) {
+                        bottomLayout.setVisibility(View.GONE);
+                        busResultLayout.setVisibility(View.VISIBLE);
+                        mBusRouteResult = massTransitRouteResult;
+                        BusResultListAdapter mBusResultListAdapter
+                                = new BusResultListAdapter(getBaseContext(), mBusRouteResult);
+                        busResultList.setAdapter(mBusResultListAdapter);
+                    } else {
+                        showToast(R.string.no_result);
+                    }
+                }
             }
 
             @Override
