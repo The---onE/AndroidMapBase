@@ -92,10 +92,10 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
         mWalkRouteOverlay.removeFromMap();
     }
 
-    @Event(R.id.btn_cancel_bus)
-    private void onCancelBusClick(View view) {
-        busResultLayout.setVisibility(View.GONE);
-    }
+//    @Event(R.id.btn_cancel_bus)
+//    private void onCancelBusClick(View view) {
+//        busResultLayout.setVisibility(View.GONE);
+//    }
 
     @Event(R.id.btn_route)
     private void onRouteClick(View view) {
@@ -171,6 +171,16 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
         fillColor = Color.argb(64, 128, 192, 192);
         markerFlag = "myLocation";
         //aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
+        
+        Button cancelBusRouteButton = new Button(this);
+        cancelBusRouteButton.setText("取消");
+        cancelBusRouteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                busResultLayout.setVisibility(View.GONE);
+            }
+        });
+        busResultList.addFooterView(cancelBusRouteButton);
     }
 
     @Override

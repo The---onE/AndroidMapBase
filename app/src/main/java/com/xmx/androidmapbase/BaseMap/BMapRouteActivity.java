@@ -107,10 +107,10 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
         routeOverlay.removeFromMap();
     }
 
-    @Event(R.id.btn_cancel_bus)
-    private void onCancelBusClick(View view) {
-        busResultLayout.setVisibility(View.GONE);
-    }
+//    @Event(R.id.btn_cancel_bus)
+//    private void onCancelBusClick(View view) {
+//        busResultLayout.setVisibility(View.GONE);
+//    }
 
     @Event(R.id.btn_route)
     private void onRouteClick(View view) {
@@ -178,6 +178,16 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
         super.initView(savedInstanceState);
 
         collectionView = new CollectionView(this, mBMap);
+
+        Button cancelBusRouteButton = new Button(this);
+        cancelBusRouteButton.setText("取消");
+        cancelBusRouteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                busResultLayout.setVisibility(View.GONE);
+            }
+        });
+        busResultList.addFooterView(cancelBusRouteButton);
     }
 
     @Override

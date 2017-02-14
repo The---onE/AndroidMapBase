@@ -114,7 +114,6 @@
             android:id="@+id/bus_result_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/btn_cancel_bus"
             android:layout_alignParentTop="true"
             android:cacheColorHint="#00000000"
             android:divider="@null"
@@ -123,14 +122,6 @@
             android:footerDividersEnabled="false"
             android:headerDividersEnabled="false"
             android:listSelector="#00000000" />
-
-        <Button
-            android:id="@+id/btn_cancel_bus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="取消" />
 
     </RelativeLayout>
 
