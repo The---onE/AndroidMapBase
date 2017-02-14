@@ -68,17 +68,18 @@ public class BMapUtil {
             return dstr + ChString.Kilometer;
         }
 
-        if (lenMeter > 100) {
-            int dis = lenMeter / 50 * 50;
-            return dis + ChString.Meter;
-        }
-
-        int dis = lenMeter / 10 * 10;
-        if (dis == 0) {
-            dis = 10;
-        }
-
-        return dis + ChString.Meter;
+//        if (lenMeter > 100) {
+//            int dis = lenMeter / 50 * 50;
+//            return dis + ChString.Meter;
+//        }
+//
+//        int dis = lenMeter / 10 * 10;
+//        if (dis == 0) {
+//            dis = 10;
+//        }
+//
+//        return dis + ChString.Meter;
+        return lenMeter + ChString.Meter;
     }
 
     public static boolean IsEmptyOrNullString(String s) {
