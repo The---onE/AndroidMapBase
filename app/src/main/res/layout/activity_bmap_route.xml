@@ -4,7 +4,7 @@
     android:id="@+id/activity_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xmx.androidmapbase.BaseMap.BMapRouteActivity">
+    tools:context="com.xmx.androidmapbase.module.map.BMapRouteActivity">
 
     <com.baidu.mapapi.map.MapView
         android:id="@+id/bmapView"

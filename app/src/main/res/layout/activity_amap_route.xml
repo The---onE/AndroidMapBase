@@ -4,7 +4,7 @@
     android:id="@+id/activity_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xmx.androidmapbase.BaseMap.AMapActivity">
+    tools:context="com.xmx.androidmapbase.module.map.AMapActivity">
 
     <com.amap.api.maps.MapView
         android:id="@+id/map"

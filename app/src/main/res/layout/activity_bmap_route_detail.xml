@@ -131,4 +131,11 @@
             android:listSelector="@color/transparent"></ListView>
     </LinearLayout>
 
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/route_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/bus_path"
+        android:visibility="gone"></com.baidu.mapapi.map.MapView>
+
 </LinearLayout>

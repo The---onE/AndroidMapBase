@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/act_background"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <RelativeLayout 
+    <RelativeLayout
         android:id="@+id/route_title"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:background="@drawable/title_background">
+
         <LinearLayout
             android:id="@+id/title_back"
             android:layout_width="70dp"
@@ -22,7 +23,7 @@
             android:onClick="onBackClick"
             android:orientation="vertical"
             android:paddingLeft="@dimen/offset_title"
-            android:paddingStart="@dimen/offset_title" >
+            android:paddingStart="@dimen/offset_title">
 
             <ImageView
                 android:layout_width="@dimen/width_title_leftImg"
@@ -31,12 +32,13 @@
                 android:scaleType="center"
                 android:src="@drawable/back" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/title_center"
@@ -47,22 +49,23 @@
                 android:textSize="@dimen/title_text_size"
                 android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/title_map"
             android:layout_width="70dp"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:background="@color/phone_bg"
             android:descendantFocusability="beforeDescendants"
             android:gravity="center_vertical"
             android:onClick="onMapClick"
             android:orientation="vertical"
-            android:paddingRight="@dimen/offset_title"
             android:paddingEnd="@dimen/offset_title"
-            android:visibility="gone" >
+            android:paddingRight="@dimen/offset_title"
+            android:visibility="gone">
 
-             <TextView
+            <TextView
                 android:id="@+id/map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,66 +74,68 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/poi_field_size" />
         </LinearLayout>
-        
+
     </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/bus_path"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:gravity="center_vertical"
-        android:padding="5dp"
-        android:background="@drawable/bg_bottom_bar"
-        android:orientation="vertical" >
-        <TextView
-            android:id="@+id/firstline"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_marginLeft="12dp"
-            android:singleLine="true"
-            android:textColor="#333333"
-            android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/secondline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/firstline"
-            android:layout_marginLeft="12dp"
-            android:gravity="right"
-            android:singleLine="true"
-            android:textColor="#999999"
-            android:textSize="13sp"
-            android:visibility="gone" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@drawable/bg_bottom_bar"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/firstline"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginLeft="12dp"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/secondline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/firstline"
+                android:layout_marginLeft="12dp"
+                android:gravity="right"
+                android:singleLine="true"
+                android:textColor="#999999"
+                android:textSize="13sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0" />
+
+        <ListView
+            android:id="@+id/bus_segment_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@color/transparent"
+            android:divider="@color/transparent"
+            android:fadingEdge="none"
+            android:fadingEdgeLength="0dp"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:listSelector="@color/transparent"></ListView>
     </LinearLayout>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#e0e0e0"/>
-
-    <ListView
-        android:id="@+id/bus_segment_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:cacheColorHint="@color/transparent"
-        android:divider="@color/transparent"
-        android:fadingEdge="none"
-        android:fadingEdgeLength="0dp"
-        android:footerDividersEnabled="false"
-        android:headerDividersEnabled="false"
-        android:listSelector="@color/transparent" >
-    </ListView>
-    </LinearLayout>
-     <com.amap.api.maps.MapView
+    <com.amap.api.maps.MapView
         android:id="@+id/route_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/bus_path" 
-        android:visibility="gone">
-    </com.amap.api.maps.MapView>
+        android:layout_below="@id/bus_path"
+        android:visibility="gone"></com.amap.api.maps.MapView>
 
 </LinearLayout>

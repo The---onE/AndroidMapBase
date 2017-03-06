@@ -33,7 +33,7 @@
 
     <!-- 基础模块 END -->
     <application
-        android:name=".Application"
+        android:name=".core.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -67,12 +67,12 @@
         <!-- 实时通信模块、推送 END -->
 
         <activity
-            android:name=".MainActivity"
+            android:name=".core.activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Splash.SplashActivity"
+            android:name=".core.activity.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -85,25 +85,25 @@
         <!-- android:launchMode="singleTask" -->
         <!-- android:theme="@style/AppTheme.NoActionBar" /> -->
         <activity
-            android:name=".User.LoginActivity"
+            android:name=".common.user.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".User.RegisterActivity"
+            android:name=".common.user.RegisterActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Log.OperationLogActivity"
+            android:name=".module.log.OperationLogActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".BaseMap.AMapActivity"></activity>
-        <activity android:name=".BaseMap.AMapPOIActivity"></activity>
-        <activity android:name=".BaseMap.AMapRouteActivity"></activity>
-        <activity android:name=".BaseMap.BMapActivity"></activity>
-        <activity android:name=".BaseMap.BMapPOIActivity"></activity>
-        <activity android:name=".BaseMap.BMapRouteActivity"></activity>
+        <activity android:name=".module.map.AMapActivity"></activity>
+        <activity android:name=".module.map.AMapPOIActivity"></activity>
+        <activity android:name=".module.map.AMapRouteActivity"></activity>
+        <activity android:name=".module.map.BMapActivity"></activity>
+        <activity android:name=".module.map.BMapPOIActivity"></activity>
+        <activity android:name=".module.map.BMapRouteActivity"></activity>
 
-        <activity android:name=".Tools.Map.AMap.Route.WalkRouteDetailActivity"></activity>
-        <activity android:name=".Tools.Map.AMap.Route.BusRouteDetailActivity"></activity>
-        <activity android:name=".Tools.Map.BMap.Route.WalkRouteDetailActivity"></activity>
+        <activity android:name=".common.map.amap.route.WalkRouteDetailActivity"></activity>
+        <activity android:name=".common.map.amap.route.BusRouteDetailActivity"></activity>
+        <activity android:name=".common.map.bmap.route.WalkRouteDetailActivity"></activity>
     </application>
 
 </manifest>
