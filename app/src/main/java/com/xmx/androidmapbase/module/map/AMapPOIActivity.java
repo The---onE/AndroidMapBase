@@ -18,6 +18,8 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.geocoder.GeocodeAddress;
@@ -57,6 +59,10 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
     private LatLng currentLatLng;
     private Marker currentCollect;
 
+    private Marker deputyMarker;
+    private LatLng deputyLatLng;
+    private Polyline linkPolyline;
+
     private POIView poiView;
     private CollectionView collectionView;
 
@@ -74,6 +80,9 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
     @ViewInject(R.id.btn_collect)
     private Button collectButton;
+
+    @ViewInject(R.id.btn_line)
+    private Button lineButton;
 
     @ViewInject(R.id.btn_collect_cancel)
     private Button cancelCollectButton;
@@ -272,8 +281,18 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             currentMarker = null;
             currentLatLng = null;
         }
+        if (deputyMarker != null) {
+            deputyMarker.remove();
+            deputyMarker = null;
+            deputyLatLng = null;
+        }
+        if (linkPolyline != null) {
+            linkPolyline.remove();
+            linkPolyline = null;
+        }
         cancelCollectButton.setVisibility(View.GONE);
         collectButton.setVisibility(View.GONE);
+        lineButton.setVisibility(View.GONE);
     }
 
     @Event(R.id.poi_detail)
@@ -308,6 +327,15 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                 poiView.resetMarker();
 
                 setCurrentPosition(latLng);
+            }
+        });
+        mAMap.setOnMapLongClickListener(new AMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                whetherToShowDetailInfo(false);
+                poiView.resetMarker();
+
+                setDeputyPosition(latLng);
             }
         });
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
@@ -426,8 +454,50 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
         currentCollect = null;
 
+        if (deputyLatLng != null) {
+            if (linkPolyline != null) {
+                linkPolyline.remove();
+                linkPolyline = null;
+            }
+            PolylineOptions p = new PolylineOptions()
+                    .add(currentLatLng)
+                    .add(deputyLatLng);
+            linkPolyline = mAMap.addPolyline(p);
+            lineButton.setVisibility(View.VISIBLE);
+        }
+
         collectButton.setVisibility(View.VISIBLE);
         cancelCollectButton.setVisibility(View.VISIBLE);
+    }
+
+    private void setDeputyPosition(LatLng latLng) {
+        if (deputyMarker != null) {
+            deputyMarker.remove();
+            deputyMarker = null;
+        }
+        MarkerOptions m = new MarkerOptions()
+                .position(
+                        new LatLng(latLng.latitude, latLng.longitude))
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(BitmapFactory.decodeResource(
+                                getResources(),
+                                R.drawable.point3)))
+                .anchor(0.5f, 0.5f);
+        deputyMarker = mAMap.addMarker(m);
+        deputyLatLng = latLng;
+
+        if (currentLatLng != null) {
+            if (linkPolyline != null) {
+                linkPolyline.remove();
+                linkPolyline = null;
+            }
+            PolylineOptions p = new PolylineOptions()
+                    .add(currentLatLng)
+                    .add(deputyLatLng);
+            linkPolyline = mAMap.addPolyline(p);
+
+            lineButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
