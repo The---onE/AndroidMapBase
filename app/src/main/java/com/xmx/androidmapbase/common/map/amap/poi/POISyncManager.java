@@ -18,7 +18,7 @@ public class POISyncManager extends BaseSyncEntityManager<POI> {
 
     private POISyncManager() {
         setTableName("CustomSyncPOI");
-        setEntityTemplate(new POI(null, null, null, null));
+        setEntityTemplate(new POI(null, null, null, null, null));
         setUserField("User");
         //userField = "";
     }

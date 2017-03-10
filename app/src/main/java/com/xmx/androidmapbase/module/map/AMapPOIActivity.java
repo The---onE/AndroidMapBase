@@ -33,7 +33,6 @@ import com.avos.avoscloud.AVObject;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.common.data.callback.DelCallback;
 import com.xmx.androidmapbase.common.map.amap.activity.BaseLocationDirectionActivity;
-import com.xmx.androidmapbase.common.data.callback.InsertCallback;
 import com.xmx.androidmapbase.common.data.callback.SelectCallback;
 import com.xmx.androidmapbase.common.map.amap.poi.CollectionView;
 import com.xmx.androidmapbase.common.map.amap.poi.POI;
@@ -50,7 +49,6 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
 import java.util.List;
-import java.util.UUID;
 
 @ContentView(R.layout.activity_amap_poi)
 public class AMapPOIActivity extends BaseLocationDirectionActivity {
@@ -232,45 +230,64 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             });
             builder.show();
         } else {
-            final EditText edit = new EditText(this);
-            edit.setTextColor(Color.BLACK);
-            edit.setTextSize(24);
-            new AlertDialog.Builder(AMapPOIActivity.this)
-                    .setTitle("添加收藏")
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .setView(edit)
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//            final EditText edit = new EditText(this);
+//            edit.setTextColor(Color.BLACK);
+//            edit.setTextSize(24);
+//            new AlertDialog.Builder(AMapPOIActivity.this)
+//                    .setTitle("添加收藏")
+//                    .setIcon(android.R.drawable.ic_dialog_info)
+//                    .setView(edit)
+//                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialogInterface, int i) {
+//                            String title = edit.getText().toString();
+//                            final POI poi = new POI(UUID.randomUUID().toString(),
+//                                    new LatLonPoint(currentLatLng.latitude, currentLatLng.longitude),
+//                                    title, "", null);
+////                        POISQLManager.getInstance().insertData(poi);
+////                        addCollectMarker(poi);
+////                        showToast("收藏成功");
+//                            CollectionManager.getInstance().insertToCloud(poi, new InsertCallback() {
+//                                @Override
+//                                public void success(AVObject user, String objectId) {
+//                                    poi.mCloudId = objectId;
+//                                    collectionView.addCollection(poi);
+//                                    showToast("收藏成功");
+//                                }
+//
+//                                @Override
+//                                public void syncError(int error) {
+//                                    CollectionManager.defaultError(error, getBaseContext());
+//                                }
+//
+//                                @Override
+//                                public void syncError(AVException e) {
+//                                    showToast(R.string.sync_failure);
+//                                    filterException(e);
+//                                }
+//                            });
+//                        }
+//                    })
+//                    .setNegativeButton("取消", null).show();
+            ACollectDialog dialog = new ACollectDialog();
+            dialog.initCreateDialog(this, AMapUtil.convertToLatLonPoint(currentLatLng), "",
+                    new ACollectCallback() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            String title = edit.getText().toString();
-                            final POI poi = new POI(UUID.randomUUID().toString(),
-                                    new LatLonPoint(currentLatLng.latitude, currentLatLng.longitude),
-                                    title, "");
-//                        POISQLManager.getInstance().insertData(poi);
-//                        addCollectMarker(poi);
-//                        showToast("收藏成功");
-                            CollectionManager.getInstance().insertToCloud(poi, new InsertCallback() {
-                                @Override
-                                public void success(AVObject user, String objectId) {
-                                    poi.mCloudId = objectId;
-                                    collectionView.addCollection(poi);
-                                    showToast("收藏成功");
-                                }
-
-                                @Override
-                                public void syncError(int error) {
-                                    CollectionManager.defaultError(error, getBaseContext());
-                                }
-
-                                @Override
-                                public void syncError(AVException e) {
-                                    showToast(R.string.sync_failure);
-                                    filterException(e);
-                                }
-                            });
+                        void onSuccess(POI collection) {
+                            Integer iconId = null;
+                            if (AMapConstantsManager.getInstance().getTypeList().size() > 0) {
+                                final List<String> list = AMapConstantsManager.getInstance().getTypeList();
+                                // 设置为默认类型
+                                iconId = AMapConstantsManager.getInstance().getIconId(collection.mType);
+                            }
+                            if (iconId != null) {
+                                collectionView.addCollection(collection, iconId);
+                            } else {
+                                collectionView.addCollection(collection);
+                            }
                         }
-                    })
-                    .setNegativeButton("取消", null).show();
+                    });
+            dialog.show(getFragmentManager(), "collect");
         }
     }
 
@@ -406,7 +423,17 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             @Override
             public void success(List<POI> poiList) {
                 for (POI poi : poiList) {
-                    collectionView.addCollection(poi);
+                    Integer iconId = null;
+                    if (AMapConstantsManager.getInstance().getTypeList().size() > 0) {
+                        final List<String> list = AMapConstantsManager.getInstance().getTypeList();
+                        // 设置为默认类型
+                        iconId = AMapConstantsManager.getInstance().getIconId(poi.mType);
+                    }
+                    if (iconId != null) {
+                        collectionView.addCollection(poi, iconId);
+                    } else {
+                        collectionView.addCollection(poi);
+                    }
                 }
             }
 

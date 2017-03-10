@@ -18,7 +18,7 @@ public class POISQLManager extends BaseSQLEntityManager<POI> {
 
     private POISQLManager() {
         tableName = "CustomPOI";
-        entityTemplate = new POI(null, null, null, null);
+        entityTemplate = new POI(null, null, null, null, null);
         openDatabase();
     }
 }

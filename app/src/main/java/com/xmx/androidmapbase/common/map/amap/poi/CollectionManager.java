@@ -18,7 +18,7 @@ public class CollectionManager extends BaseCloudEntityManager<POI> {
 
     private CollectionManager() {
         tableName = "CustomPOI";
-        entityTemplate = new POI(null, null, null, null);
+        entityTemplate = new POI(null, null, null, null, null);
         //userField = "";
     }
 }

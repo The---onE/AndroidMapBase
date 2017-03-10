@@ -21,13 +21,18 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntit
     public long mId = -1;
     public String mCloudId = null;
     public Date mTime;
+    public String mType;
+    public String mTitle;
+    public String mContent;
 
     public POI(String id,
                LatLonPoint point,
                String title,
-               String snippet) {
+               String snippet,
+               String type) {
         super(id, point, title, snippet);
         mTime = new Date();
+        mType = type;
     }
 
     public POI(PoiItem o) {
@@ -44,6 +49,7 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntit
                 "Longitude real not null, " +
                 "Title text, " +
                 "Snippet text, " +
+                "type text, " +
                 "Time integer not null default(0)";
     }
 
@@ -59,8 +65,9 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntit
         content.put("PoiId", getPoiId());
         content.put("Latitude", getLatLonPoint().getLatitude());
         content.put("Longitude", getLatLonPoint().getLongitude());
-        content.put("Title", getTitle());
-        content.put("Snippet", getSnippet());
+        content.put("Title", mTitle != null ? mTitle : getTitle());
+        content.put("Snippet", mContent!= null ? mContent : getSnippet());
+        content.put("Type", mType);
         content.put("Time", mTime.getTime());
         return content;
     }
@@ -74,9 +81,10 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntit
         double longitude = c.getDouble(4);
         String title = c.getString(5);
         String snippet = c.getString(6);
-        Date time = new Date(c.getLong(7));
+        String type = c.getString(7);
+        Date time = new Date(c.getLong(8));
 
-        POI entity = new POI(PoiId, new LatLonPoint(latitude, longitude), title, snippet);
+        POI entity = new POI(PoiId, new LatLonPoint(latitude, longitude), title, snippet, type);
         entity.mId = id;
         entity.mCloudId = cloudId;
         entity.mTime = time;
@@ -96,8 +104,9 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntit
         object.put("PoiId", getPoiId());
         object.put("Latitude", getLatLonPoint().getLatitude());
         object.put("Longitude", getLatLonPoint().getLongitude());
-        object.put("Title", getTitle());
-        object.put("Snippet", getSnippet());
+        object.put("Title", mTitle != null ? mTitle : getTitle());
+        object.put("Snippet", mContent!= null ? mContent : getSnippet());
+        object.put("Type", mType);
         object.put("Time", mTime);
 
         return object;
@@ -112,9 +121,10 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntit
         double longitude = object.getDouble("Longitude");
         String title = object.getString("Title");
         String snippet = object.getString("Snippet");
+        String type = object.getString("Type");
         Date time = object.getDate("Time");
 
-        POI entity = new POI(PoiId, new LatLonPoint(latitude, longitude), title, snippet);
+        POI entity = new POI(PoiId, new LatLonPoint(latitude, longitude), title, snippet, type);
         entity.mId = id;
         entity.mCloudId = cloudId;
         entity.mTime = time;

@@ -30,14 +30,22 @@ public class CollectionView {
     }
 
     public void addCollection(POI poi) {
+        addCollection(poi, R.drawable.collection);
+    }
+
+    public void addCollection(POI poi, int iconId) {
+        addCollection(poi, iconId, 0.5f, 1f);
+    }
+
+    public void addCollection(POI poi, int iconId, float anchorX, float anchorY) {
         MarkerOptions m = new MarkerOptions()
                 .position(new LatLng(poi.getLatLonPoint().getLatitude(),
                         poi.getLatLonPoint().getLongitude()))
                 .icon(BitmapDescriptorFactory
                         .fromBitmap(BitmapFactory.decodeResource(
                                 mContext.getResources(),
-                                R.drawable.point5)))
-                .anchor(0.5f, 0.5f);
+                                iconId)))
+                .anchor(anchorX, anchorY);
         Marker marker = mAMap.addMarker(m);
         marker.setObject(poi);
         collectMarkers.add(marker);
