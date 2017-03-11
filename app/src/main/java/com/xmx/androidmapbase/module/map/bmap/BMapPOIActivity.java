@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.module.map;
+package com.xmx.androidmapbase.module.map.bmap;
 
 import android.content.DialogInterface;
 import android.graphics.BitmapFactory;

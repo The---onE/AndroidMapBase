@@ -94,12 +94,12 @@
             android:name=".module.log.OperationLogActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".module.map.AMapActivity"></activity>
-        <activity android:name=".module.map.AMapPOIActivity"></activity>
-        <activity android:name=".module.map.AMapRouteActivity"></activity>
-        <activity android:name=".module.map.BMapActivity"></activity>
-        <activity android:name=".module.map.BMapPOIActivity"></activity>
-        <activity android:name=".module.map.BMapRouteActivity"></activity>
+        <activity android:name=".module.map.amap.AMapActivity"></activity>
+        <activity android:name=".module.map.amap.AMapPOIActivity"></activity>
+        <activity android:name=".module.map.amap.AMapRouteActivity"></activity>
+        <activity android:name=".module.map.bmap.BMapActivity"></activity>
+        <activity android:name=".module.map.bmap.BMapPOIActivity"></activity>
+        <activity android:name=".module.map.bmap.BMapRouteActivity"></activity>
 
         <activity android:name=".common.map.amap.route.WalkRouteDetailActivity"></activity>
         <activity android:name=".common.map.amap.route.BusRouteDetailActivity"></activity>

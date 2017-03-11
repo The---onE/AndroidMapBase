@@ -26,7 +26,7 @@ public abstract class BaseLocationDirectionActivity extends BaseLocationActivity
     protected String markerFlag = "myLocation";
 
     private boolean mFirstFix = false; //是否已将图标添加到地图
-    private Marker mLocMarker; //定位点
+    protected Marker mLocMarker; //定位点
     private Circle mCircle; //精度圆
     private SensorEventHelper mSensorHelper; //用于获取指南针方向
 

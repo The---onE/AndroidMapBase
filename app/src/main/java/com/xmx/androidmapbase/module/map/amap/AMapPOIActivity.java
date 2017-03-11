@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.module.map;
+package com.xmx.androidmapbase.module.map.amap;
 
 import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
@@ -358,6 +358,9 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                if (marker == mLocMarker) {
+                    return false;
+                }
                 setCurrentPosition(marker.getPosition());
                 Object o = marker.getObject();
                 if (o != null) {

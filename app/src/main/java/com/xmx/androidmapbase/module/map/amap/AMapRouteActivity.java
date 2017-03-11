@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.module.map;
+package com.xmx.androidmapbase.module.map.amap;
 
 import android.content.DialogInterface;
 import android.content.Intent;

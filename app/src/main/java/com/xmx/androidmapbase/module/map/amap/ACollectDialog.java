@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.module.map;
+package com.xmx.androidmapbase.module.map.amap;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;

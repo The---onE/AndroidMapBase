@@ -4,12 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
-import com.xmx.androidmapbase.module.map.BMapActivity;
-import com.xmx.androidmapbase.module.map.AMapActivity;
-import com.xmx.androidmapbase.module.map.AMapPOIActivity;
-import com.xmx.androidmapbase.module.map.AMapRouteActivity;
-import com.xmx.androidmapbase.module.map.BMapPOIActivity;
-import com.xmx.androidmapbase.module.map.BMapRouteActivity;
+import com.xmx.androidmapbase.module.map.bmap.BMapActivity;
+import com.xmx.androidmapbase.module.map.amap.AMapActivity;
+import com.xmx.androidmapbase.module.map.amap.AMapPOIActivity;
+import com.xmx.androidmapbase.module.map.amap.AMapRouteActivity;
+import com.xmx.androidmapbase.module.map.bmap.BMapPOIActivity;
+import com.xmx.androidmapbase.module.map.bmap.BMapRouteActivity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.fragment.xUtilsFragment;
 
