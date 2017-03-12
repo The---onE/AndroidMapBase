@@ -49,7 +49,7 @@ public class POI extends PoiItem implements ISQLEntity, ICloudEntity, ISyncEntit
                 "Longitude real not null, " +
                 "Title text, " +
                 "Snippet text, " +
-                "type text, " +
+                "Type text, " +
                 "Time integer not null default(0)";
     }
 

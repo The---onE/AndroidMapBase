@@ -34,6 +34,8 @@ import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.common.data.callback.DelCallback;
 import com.xmx.androidmapbase.common.map.amap.activity.BaseLocationDirectionActivity;
 import com.xmx.androidmapbase.common.data.callback.SelectCallback;
+import com.xmx.androidmapbase.common.map.amap.line.Line;
+import com.xmx.androidmapbase.common.map.amap.line.LineManager;
 import com.xmx.androidmapbase.common.map.amap.poi.CollectionView;
 import com.xmx.androidmapbase.common.map.amap.poi.POI;
 import com.xmx.androidmapbase.common.map.amap.poi.CollectionManager;
@@ -312,6 +314,23 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
         lineButton.setVisibility(View.GONE);
     }
 
+    @Event(R.id.btn_line)
+    private void onLineClick(View view) {
+        ALineDialog dialog = new ALineDialog();
+        dialog.initCreateDialog(this, currentLatLng, deputyLatLng, new ALineCallback() {
+            @Override
+            void onSuccess(Line line) {
+                Polyline polyline = mAMap.addPolyline(new PolylineOptions()
+                        .add(currentLatLng)
+                        .add(deputyLatLng)
+                        .color(line.mColor)
+                        .width((float) line.mWidth)
+                        .geodesic(true));
+            }
+        });
+        dialog.show(getFragmentManager(), "line");
+    }
+
     @Event(R.id.poi_detail)
     private void onDetailClick(View view) {
         //打开地点详情
@@ -451,6 +470,31 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                 filterException(e);
             }
         });
+
+        LineManager.getInstance().selectAll(new SelectCallback<Line>() {
+            @Override
+            public void success(List<Line> lines) {
+                for (Line line : lines) {
+                    Polyline polyline = mAMap.addPolyline(new PolylineOptions()
+                            .add(line.mStart)
+                            .add(line.mEnd)
+                            .color(line.mColor)
+                            .width((float) line.mWidth)
+                            .geodesic(true));
+                }
+            }
+
+            @Override
+            public void syncError(int error) {
+                LineManager.defaultError(error, getBaseContext());
+            }
+
+            @Override
+            public void syncError(AVException e) {
+                showToast(R.string.sync_failure);
+                filterException(e);
+            }
+        });
     }
 
     private void setPoiItemDisplayContent(final POI mCurrentPoi) {
@@ -491,7 +535,8 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             }
             PolylineOptions p = new PolylineOptions()
                     .add(currentLatLng)
-                    .add(deputyLatLng);
+                    .add(deputyLatLng)
+                    .geodesic(true);
             linkPolyline = mAMap.addPolyline(p);
             lineButton.setVisibility(View.VISIBLE);
         }
@@ -523,7 +568,8 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             }
             PolylineOptions p = new PolylineOptions()
                     .add(currentLatLng)
-                    .add(deputyLatLng);
+                    .add(deputyLatLng)
+                    .geodesic(true);
             linkPolyline = mAMap.addPolyline(p);
 
             lineButton.setVisibility(View.VISIBLE);

@@ -51,6 +51,12 @@ public class AMapConstantsManager {
         typeMap.put("I", R.drawable.icon_marki);
         typeMap.put("J", R.drawable.icon_markj);
 
+        colorMap.put("1号线", Color.rgb(255, 225, 0));
+        colorMap.put("2号线", Color.rgb(195, 42, 5));
+        colorMap.put("3号线", Color.rgb(0, 109, 187));
+        colorMap.put("4号线", Color.rgb(0, 118, 60));
+        colorMap.put("11号线", Color.rgb(48, 66, 153));
+
         colorMap.put("黑色", Color.BLACK);
         colorMap.put("白色", Color.WHITE);
         colorMap.put("红色", Color.RED);
