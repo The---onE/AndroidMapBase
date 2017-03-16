@@ -5,12 +5,14 @@ import android.os.Handler;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
+import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.core.Constants;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseSplashActivity;
 import com.xmx.androidmapbase.common.user.callback.AutoLoginCallback;
 import com.xmx.androidmapbase.common.user.UserConstants;
 import com.xmx.androidmapbase.common.user.UserManager;
+import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 public class SplashLoginActivity extends BaseSplashActivity {
     boolean loginFlag = false;
@@ -53,7 +55,7 @@ public class SplashLoginActivity extends BaseSplashActivity {
 
         UserManager.getInstance().autoLogin(new AutoLoginCallback() {
             @Override
-            public void success(AVObject user) {
+            public void success(UserData user) {
                 loginFlag = true;
                 if (timeFlag) {
                     startMainActivity();
@@ -63,7 +65,7 @@ public class SplashLoginActivity extends BaseSplashActivity {
             @Override
             public void error(AVException e) {
                 showToast(R.string.network_error);
-                filterException(e);
+                ExceptionUtil.normalException(e, getBaseContext());
                 notLoginFlag = true;
                 if (timeFlag) {
                     startLoginActivity();

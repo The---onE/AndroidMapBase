@@ -45,6 +45,8 @@ import com.xmx.androidmapbase.common.map.amap.utils.AMapServicesUtil;
 import com.xmx.androidmapbase.common.map.amap.utils.AMapUtil;
 import com.xmx.androidmapbase.common.map.amap.utils.ToastUtil;
 import com.xmx.androidmapbase.common.map.amap.poi.POIManager;
+import com.xmx.androidmapbase.common.user.UserData;
+import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -205,7 +207,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                     CollectionManager.getInstance().deleteFromCloud(id,
                             new DelCallback() {
                                 @Override
-                                public void success(AVObject user) {
+                                public void success(UserData user) {
                                     showToast("删除成功");
                                     currentCollect.remove();
                                     currentCollect = null;
@@ -219,7 +221,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
                                 @Override
                                 public void syncError(AVException e) {
                                     showToast(R.string.delete_failure);
-                                    filterException(e);
+                                    ExceptionUtil.normalException(e, getBaseContext());
                                 }
                             });
                 }
@@ -401,7 +403,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
 
                         setPoiItemDisplayContent(mCurrentPoi);
                     } catch (Exception e) {
-                        filterException(e);
+                        ExceptionUtil.normalException(e, getBaseContext());
                     }
                 } else {
                     whetherToShowDetailInfo(false);
@@ -467,7 +469,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             @Override
             public void syncError(AVException e) {
                 showToast(R.string.sync_failure);
-                filterException(e);
+                ExceptionUtil.normalException(e, getBaseContext());
             }
         });
 
@@ -492,7 +494,7 @@ public class AMapPOIActivity extends BaseLocationDirectionActivity {
             @Override
             public void syncError(AVException e) {
                 showToast(R.string.sync_failure);
-                filterException(e);
+                ExceptionUtil.normalException(e, getBaseContext());
             }
         });
     }

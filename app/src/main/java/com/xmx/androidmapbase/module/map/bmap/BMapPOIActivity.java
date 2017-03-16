@@ -39,6 +39,8 @@ import com.xmx.androidmapbase.common.map.bmap.poi.POI;
 import com.xmx.androidmapbase.common.map.bmap.poi.POIManager;
 import com.xmx.androidmapbase.common.map.bmap.poi.POIView;
 import com.xmx.androidmapbase.common.map.bmap.poi.POIViewSearchCallback;
+import com.xmx.androidmapbase.common.user.UserData;
+import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -183,7 +185,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                     CollectionManager.getInstance().deleteFromCloud(id,
                             new DelCallback() {
                                 @Override
-                                public void success(AVObject user) {
+                                public void success(UserData user) {
                                     showToast("删除成功");
                                     currentCollect.remove();
                                     currentCollect = null;
@@ -197,7 +199,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                                 @Override
                                 public void syncError(AVException e) {
                                     showToast(R.string.delete_failure);
-                                    filterException(e);
+                                    ExceptionUtil.normalException(e, getBaseContext());
                                 }
                             });
                 }
@@ -229,7 +231,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
 //                        showToast("收藏成功");
                             CollectionManager.getInstance().insertToCloud(poi, new InsertCallback() {
                                 @Override
-                                public void success(AVObject user, String objectId) {
+                                public void success(UserData user, String objectId) {
                                     poi.mCloudId = objectId;
                                     collectionView.addCollection(poi);
                                     showToast("收藏成功");
@@ -243,7 +245,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
                                 @Override
                                 public void syncError(AVException e) {
                                     showToast(R.string.sync_failure);
-                                    filterException(e);
+                                    ExceptionUtil.normalException(e, getBaseContext());
                                 }
                             });
                         }
@@ -330,7 +332,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
 
                         setPoiItemDisplayContent(marker.getTitle());
                     } catch (Exception e) {
-                        filterException(e);
+                        ExceptionUtil.normalException(e, getBaseContext());
                     }
                 } else {
                     whetherToShowDetailInfo(false);
@@ -408,7 +410,7 @@ public class BMapPOIActivity extends BaseLocationDirectionActivity {
             @Override
             public void syncError(AVException e) {
                 showToast(R.string.sync_failure);
-                filterException(e);
+                ExceptionUtil.normalException(e, getBaseContext());
             }
         });
     }

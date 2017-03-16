@@ -40,6 +40,7 @@ import com.xmx.androidmapbase.common.map.amap.route.WalkRouteOverlay;
 import com.xmx.androidmapbase.common.map.amap.utils.AMapServicesUtil;
 import com.xmx.androidmapbase.common.map.amap.utils.AMapUtil;
 import com.xmx.androidmapbase.common.map.amap.utils.ToastUtil;
+import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -333,7 +334,7 @@ public class AMapRouteActivity extends BaseLocationDirectionActivity {
             @Override
             public void syncError(AVException e) {
                 showToast(R.string.sync_failure);
-                filterException(e);
+                ExceptionUtil.normalException(e, getBaseContext());
             }
         });
     }

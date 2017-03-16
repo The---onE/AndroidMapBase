@@ -20,6 +20,7 @@ import com.xmx.androidmapbase.common.data.callback.InsertCallback;
 import com.xmx.androidmapbase.common.map.amap.poi.CollectionManager;
 import com.xmx.androidmapbase.common.map.amap.poi.POI;
 import com.xmx.androidmapbase.common.map.amap.utils.ToastUtil;
+import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 import java.util.List;
@@ -156,7 +157,7 @@ public class ACollectDialog extends DialogFragment {
                     // 添加收藏
                     CollectionManager.getInstance().insertToCloud(col, new InsertCallback() {
                         @Override
-                        public void success(AVObject user, String objectId) {
+                        public void success(UserData user, String objectId) {
                             ToastUtil.show(mContext, "收藏成功");
                             col.mCloudId = objectId;
                             mCallback.onSuccess(col);
@@ -171,7 +172,7 @@ public class ACollectDialog extends DialogFragment {
                         @Override
                         public void syncError(AVException e) {
                             ToastUtil.show(mContext, "收藏失败");
-                            ExceptionUtil.filterException(e);
+                            ExceptionUtil.normalException(e, mContext);
                         }
                     });
                 } else {
@@ -183,7 +184,7 @@ public class ACollectDialog extends DialogFragment {
                         // 插入带有Cloud Id的实体会覆盖之前的实体
                         CollectionManager.getInstance().insertToCloud(mCollection, new InsertCallback() {
                             @Override
-                            public void success(AVObject user, String objectId) {
+                            public void success(UserData user, String objectId) {
                                 ToastUtil.show(mContext, "修改成功");
                                 mCallback.onSuccess(mCollection);
                                 dismiss();
@@ -197,7 +198,7 @@ public class ACollectDialog extends DialogFragment {
                             @Override
                             public void syncError(AVException e) {
                                 ToastUtil.show(mContext, "修改失败");
-                                ExceptionUtil.filterException(e);
+                                ExceptionUtil.normalException(e, mContext);
                             }
                         });
                     }

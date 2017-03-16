@@ -9,6 +9,7 @@ import com.avos.avoscloud.AVException;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseTempActivity;
 import com.xmx.androidmapbase.common.user.callback.RegisterCallback;
+import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 public class RegisterActivity extends BaseTempActivity {
 
@@ -52,7 +53,7 @@ public class RegisterActivity extends BaseTempActivity {
                 register.setEnabled(false);
                 UserManager.getInstance().register(username, password, nickname, new RegisterCallback() {
                     @Override
-                    public void success() {
+                    public void success(UserData user) {
                         showToast(R.string.register_success);
                         finish();
                     }
@@ -60,7 +61,7 @@ public class RegisterActivity extends BaseTempActivity {
                     @Override
                     public void error(AVException e) {
                         showToast(R.string.network_error);
-                        filterException(e);
+                        ExceptionUtil.normalException(e, getBaseContext());
                         register.setEnabled(true);
                     }
 

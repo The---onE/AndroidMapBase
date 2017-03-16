@@ -8,12 +8,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
-import com.xmx.androidmapbase.core.Constants;
-import com.xmx.androidmapbase.core.activity.MainActivity;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseActivity;
 import com.xmx.androidmapbase.common.user.callback.LoginCallback;
+import com.xmx.androidmapbase.core.Constants;
+import com.xmx.androidmapbase.core.activity.MainActivity;
+import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 public class LoginActivity extends BaseActivity {
     private long mExitTime = 0;
@@ -43,7 +43,7 @@ public class LoginActivity extends BaseActivity {
                     UserManager.getInstance().login(username, password,
                             new LoginCallback() {
                                 @Override
-                                public void success(AVObject user) {
+                                public void success(UserData user) {
                                     showToast(R.string.login_success);
                                     if (mustFlag) {
                                         startActivity(MainActivity.class);
@@ -56,7 +56,7 @@ public class LoginActivity extends BaseActivity {
                                 @Override
                                 public void error(AVException e) {
                                     showToast(R.string.network_error);
-                                    filterException(e);
+                                    ExceptionUtil.normalException(e, getBaseContext());
                                     login.setEnabled(true);
                                 }
 

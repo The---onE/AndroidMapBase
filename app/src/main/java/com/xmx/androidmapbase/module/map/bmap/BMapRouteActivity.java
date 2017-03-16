@@ -46,6 +46,7 @@ import com.xmx.androidmapbase.common.map.bmap.route.OverlayManager;
 import com.xmx.androidmapbase.common.map.bmap.route.WalkRouteDetailActivity;
 import com.xmx.androidmapbase.common.map.bmap.route.WalkingRouteOverlay;
 import com.xmx.androidmapbase.common.map.bmap.utils.BMapUtil;
+import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -434,7 +435,7 @@ public class BMapRouteActivity extends BaseLocationDirectionActivity {
             @Override
             public void syncError(AVException e) {
                 showToast(R.string.sync_failure);
-                filterException(e);
+                ExceptionUtil.normalException(e, getBaseContext());
             }
         });
     }

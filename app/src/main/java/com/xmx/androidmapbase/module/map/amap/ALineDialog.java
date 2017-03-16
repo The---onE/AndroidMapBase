@@ -20,6 +20,7 @@ import com.xmx.androidmapbase.common.data.callback.InsertCallback;
 import com.xmx.androidmapbase.common.map.amap.line.Line;
 import com.xmx.androidmapbase.common.map.amap.line.LineManager;
 import com.xmx.androidmapbase.common.map.amap.utils.ToastUtil;
+import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 import java.util.List;
@@ -160,7 +161,7 @@ public class ALineDialog extends DialogFragment {
                     // 添加路线
                     LineManager.getInstance().insertToCloud(line, new InsertCallback() {
                         @Override
-                        public void success(AVObject user, String objectId) {
+                        public void success(UserData user, String objectId) {
                             // 添加成功
                             ToastUtil.show(mContext, "添加成功");
                             line.mCloudId = objectId;
@@ -176,7 +177,7 @@ public class ALineDialog extends DialogFragment {
                         @Override
                         public void syncError(AVException e) {
                             ToastUtil.show(mContext, "添加失败");
-                            ExceptionUtil.filterException(e);
+                            ExceptionUtil.normalException(e, mContext);
                         }
                     });
                 } else {
@@ -190,7 +191,7 @@ public class ALineDialog extends DialogFragment {
                         // 插入带有Cloud Id的实体会覆盖之前的实体
                         LineManager.getInstance().insertToCloud(mLine, new InsertCallback() {
                             @Override
-                            public void success(AVObject user, String objectId) {
+                            public void success(UserData user, String objectId) {
                                 ToastUtil.show(mContext, "修改成功");
                                 mCallback.onSuccess(mLine);
                                 dismiss();
@@ -204,7 +205,7 @@ public class ALineDialog extends DialogFragment {
                             @Override
                             public void syncError(AVException e) {
                                 ToastUtil.show(mContext, "添加失败");
-                                ExceptionUtil.filterException(e);
+                                ExceptionUtil.normalException(e, mContext);
                             }
                         });
                     }

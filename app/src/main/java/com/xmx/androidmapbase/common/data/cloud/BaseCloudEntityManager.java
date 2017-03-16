@@ -17,6 +17,7 @@ import com.xmx.androidmapbase.common.data.callback.SelectCallback;
 import com.xmx.androidmapbase.common.data.callback.SelectLoginCallback;
 import com.xmx.androidmapbase.common.data.callback.UpdateCallback;
 import com.xmx.androidmapbase.common.data.DataConstants;
+import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.common.user.callback.AutoLoginCallback;
 import com.xmx.androidmapbase.common.user.UserConstants;
 import com.xmx.androidmapbase.common.user.UserManager;
@@ -46,6 +47,7 @@ public abstract class BaseCloudEntityManager<Entity extends ICloudEntity> {
             return;
         }
         AVQuery<AVObject> query = new AVQuery<>(tableName);
+        query.limit(1000);
         query.findInBackground(new FindCallback<AVObject>() {
             public void done(List<AVObject> avObjects, AVException e) {
                 if (e == null) {
@@ -139,10 +141,10 @@ public abstract class BaseCloudEntityManager<Entity extends ICloudEntity> {
         }
         UserManager.getInstance().checkLogin(new AutoLoginCallback() {
             @Override
-            public void success(final AVObject user) {
+            public void success(final UserData user) {
                 AVQuery<AVObject> query = new AVQuery<>(tableName);
                 if (userField != null) {
-                    query.whereEqualTo(userField, user.getObjectId());
+                    query.whereEqualTo(userField, user.objectId);
                 }
                 if (conditions != null) {
                     for (String key : conditions.keySet()) {
@@ -201,10 +203,10 @@ public abstract class BaseCloudEntityManager<Entity extends ICloudEntity> {
         }
         UserManager.getInstance().checkLogin(new AutoLoginCallback() {
             @Override
-            public void success(final AVObject user) {
+            public void success(final UserData user) {
                 final AVObject object = entity.getContent(tableName);
                 if (userField != null) {
-                    object.put(userField, user.getObjectId());
+                    object.put(userField, user.objectId);
                 }
                 object.saveInBackground(new SaveCallback() {
                     @Override
@@ -247,7 +249,7 @@ public abstract class BaseCloudEntityManager<Entity extends ICloudEntity> {
         }
         UserManager.getInstance().checkLogin(new AutoLoginCallback() {
             @Override
-            public void success(final AVObject user) {
+            public void success(final UserData user) {
                 AVQuery<AVObject> query = new AVQuery<>(tableName);
                 query.getInBackground(objectId, new GetCallback<AVObject>() {
                     @Override
@@ -300,7 +302,7 @@ public abstract class BaseCloudEntityManager<Entity extends ICloudEntity> {
         }
         UserManager.getInstance().checkLogin(new AutoLoginCallback() {
             @Override
-            public void success(final AVObject user) {
+            public void success(final UserData user) {
                 AVQuery<AVObject> query = new AVQuery<>(tableName);
                 query.getInBackground(objectId, new GetCallback<AVObject>() {
                     @Override
