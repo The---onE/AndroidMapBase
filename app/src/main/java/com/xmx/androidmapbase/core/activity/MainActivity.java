@@ -16,10 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseActivity;
-import com.xmx.androidmapbase.common.user.LoginActivity;
+import com.xmx.androidmapbase.module.user.LoginActivity;
 import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.common.user.callback.LogoutCallback;
 import com.xmx.androidmapbase.core.Constants;

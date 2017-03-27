@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.common.user;
+package com.xmx.androidmapbase.module.user;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +8,9 @@ import android.widget.EditText;
 import com.avos.avoscloud.AVException;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseTempActivity;
+import com.xmx.androidmapbase.common.user.UserConstants;
+import com.xmx.androidmapbase.common.user.UserData;
+import com.xmx.androidmapbase.common.user.UserManager;
 import com.xmx.androidmapbase.common.user.callback.RegisterCallback;
 import com.xmx.androidmapbase.utils.ExceptionUtil;
 
@@ -68,7 +71,7 @@ public class RegisterActivity extends BaseTempActivity {
                     @Override
                     public void error(int error) {
                         switch (error) {
-                            case UserConstants.USERNAME_ERROR:
+                            case UserConstants.USERNAME_EXIST:
                                 showToast(R.string.username_exist);
                                 register.setEnabled(true);
                                 break;

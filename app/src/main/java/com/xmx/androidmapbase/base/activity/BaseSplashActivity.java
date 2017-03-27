@@ -2,7 +2,7 @@ package com.xmx.androidmapbase.base.activity;
 
 import android.content.Intent;
 
-import com.xmx.androidmapbase.common.user.LoginActivity;
+import com.xmx.androidmapbase.module.user.LoginActivity;
 import com.xmx.androidmapbase.core.activity.MainActivity;
 
 /**

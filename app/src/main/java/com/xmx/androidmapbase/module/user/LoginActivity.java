@@ -1,4 +1,4 @@
-package com.xmx.androidmapbase.common.user;
+package com.xmx.androidmapbase.module.user;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.widget.EditText;
 import com.avos.avoscloud.AVException;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseActivity;
+import com.xmx.androidmapbase.common.user.UserConstants;
+import com.xmx.androidmapbase.common.user.UserData;
+import com.xmx.androidmapbase.common.user.UserManager;
 import com.xmx.androidmapbase.common.user.callback.LoginCallback;
 import com.xmx.androidmapbase.core.Constants;
 import com.xmx.androidmapbase.core.activity.MainActivity;
