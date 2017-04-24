@@ -10,6 +10,7 @@ import android.widget.EditText;
 import com.avos.avoscloud.AVException;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseActivity;
+import com.xmx.androidmapbase.common.user.IUserManager;
 import com.xmx.androidmapbase.common.user.UserConstants;
 import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.common.user.UserManager;
@@ -21,6 +22,8 @@ import com.xmx.androidmapbase.utils.ExceptionUtil;
 public class LoginActivity extends BaseActivity {
     private long mExitTime = 0;
     public boolean mustFlag = false;
+
+    private IUserManager userManager = UserManager.getInstance();
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -43,7 +46,7 @@ public class LoginActivity extends BaseActivity {
                     showToast(R.string.password_empty);
                 } else {
                     login.setEnabled(false);
-                    UserManager.getInstance().login(username, password,
+                    userManager.login(username, password,
                             new LoginCallback() {
                                 @Override
                                 public void success(UserData user) {

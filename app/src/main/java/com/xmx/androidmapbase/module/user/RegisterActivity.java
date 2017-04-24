@@ -8,6 +8,7 @@ import android.widget.EditText;
 import com.avos.avoscloud.AVException;
 import com.xmx.androidmapbase.R;
 import com.xmx.androidmapbase.base.activity.BaseTempActivity;
+import com.xmx.androidmapbase.common.user.IUserManager;
 import com.xmx.androidmapbase.common.user.UserConstants;
 import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.common.user.UserManager;
@@ -15,6 +16,8 @@ import com.xmx.androidmapbase.common.user.callback.RegisterCallback;
 import com.xmx.androidmapbase.utils.ExceptionUtil;
 
 public class RegisterActivity extends BaseTempActivity {
+
+    private IUserManager userManager = UserManager.getInstance();
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -54,7 +57,7 @@ public class RegisterActivity extends BaseTempActivity {
                 }
 
                 register.setEnabled(false);
-                UserManager.getInstance().register(username, password, nickname, new RegisterCallback() {
+                userManager.register(username, password, nickname, new RegisterCallback() {
                     @Override
                     public void success(UserData user) {
                         showToast(R.string.register_success);

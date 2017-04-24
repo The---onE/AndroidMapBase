@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
+import com.xmx.androidmapbase.common.user.IUserManager;
 import com.xmx.androidmapbase.common.user.UserData;
 import com.xmx.androidmapbase.core.Constants;
 import com.xmx.androidmapbase.R;
@@ -19,6 +20,8 @@ public class SplashLoginActivity extends BaseSplashActivity {
     boolean timeFlag = false;
     boolean notLoginFlag = false;
     boolean startFlag = false;
+
+    private IUserManager userManager = UserManager.getInstance();
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -52,8 +55,7 @@ public class SplashLoginActivity extends BaseSplashActivity {
             }
         }, Constants.LONGEST_SPLASH_TIME);
 
-
-        UserManager.getInstance().autoLogin(new AutoLoginCallback() {
+        userManager.autoLogin(new AutoLoginCallback() {
             @Override
             public void success(UserData user) {
                 loginFlag = true;
