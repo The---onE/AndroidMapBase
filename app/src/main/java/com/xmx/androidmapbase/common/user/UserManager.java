@@ -31,7 +31,7 @@ import java.util.Random;
  * Created by The_onE on 2016/1/10.
  * 用户管理器，单例类
  */
-public class UserManager {
+public class UserManager implements IUserManager {
     private static UserManager instance;
 
     public synchronized static UserManager getInstance() {
@@ -127,7 +127,7 @@ public class UserManager {
      *
      * @return 是否登录成功过
      */
-    public boolean checkLoggedIn() {
+    private boolean checkLoggedIn() {
         return mSP.getBoolean("loggedin", false);
     }
 
@@ -173,7 +173,7 @@ public class UserManager {
      * @param user     用户数据
      * @param callback 自定义处理
      */
-    public void logoutProc(UserData user, LogoutCallback callback) {
+    private void logoutProc(UserData user, LogoutCallback callback) {
         loginFlag = false;
 
         SharedPreferences.Editor editor = mSP.edit();
